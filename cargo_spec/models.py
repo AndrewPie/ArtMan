@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator
 
 class Specification(models.Model):
     STORAGE = (
-        ('pokład', 'pokład'),
+        ('POKŁAD', 'pokład'),
         ('ładownia', 'ładownia'),
         ('kabina', 'kabina'),
         ('+4', '+4'), 
@@ -37,7 +37,7 @@ class CargoContent(models.Model):
     quantity = models.DecimalField(max_digits=7, decimal_places=1)
     unit_of_measurement = models.CharField(max_length=24)
     value = models.DecimalField(max_digits=7, decimal_places=2)
-    specification = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    specification = models.ForeignKey(Specification, on_delete=models.CASCADE, related_name='cargos_content')
     
     def __str__(self):
         return f'{self.specification.marking} - {self.name}'
