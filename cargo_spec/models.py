@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -26,9 +28,17 @@ class Specification(models.Model):
     description = models.CharField(max_length=128)
     total_value = models.DecimalField(max_digits=7, decimal_places=2)
     approved = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        capacity_ = self.dimension_length * self.dimension_width * self.dimension_height
+        self.capacity = capacity_
+        
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.marking
+
+#TODO: upload zdjęcia
 
 
 class CargoContent(models.Model):

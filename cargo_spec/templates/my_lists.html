@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Specyfikacje ładunkowe:</h3>
+<ul>
+    {% for object in object_list %}
+        <li><a href="{% url 'cargo_spec:modify-spec' object.id %}">{{ object.marking }}</a></li>
+    {% endfor %}
+</ul>
+<a href="{% url 'cargo_spec:add-spec' %}">Dodaj specyfikację</a>
+{% endblock %}
