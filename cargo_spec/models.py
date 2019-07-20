@@ -26,7 +26,7 @@ class Specification(models.Model):
     weight =  models.PositiveIntegerField(validators=[MinValueValidator(1)])
     storage = models.CharField(max_length=32, choices=STORAGE)
     description = models.CharField(max_length=128)
-    total_value = models.DecimalField(max_digits=7, decimal_places=2)
+    total_value = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     approved = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
