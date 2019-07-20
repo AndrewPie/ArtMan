@@ -41,11 +41,11 @@ class Login(View):
                 if redirect_url:
                     return redirect(redirect_url)
                 else:
-                    return redirect('users:test2')
+                    return redirect('/')
 
             else:
                 return HttpResponse('brak uzytkownika')
-        return HttpResponse('dupa')
+        return HttpResponse('cos poszlo nie tak')
 
 class Logout(View):
     def get(selq,request):
