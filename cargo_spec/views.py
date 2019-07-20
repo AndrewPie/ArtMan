@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render
-from django.views.generic import ListView, CreateView, UpdateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db import transaction
 from datetime import datetime
@@ -13,6 +14,7 @@ from .utils import specification_marking
 class MyListView(ListView):
     model = Specification
     template_name = 'my_lists.html'
+    ordering = ['-marking']
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -22,7 +24,7 @@ class MyListView(ListView):
 
 class AddSpecificationView(CreateView):
     model = Specification
-    template_name = 'specification-form.html'
+    template_name = 'specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -41,6 +43,11 @@ class AddSpecificationView(CreateView):
             form.instance.marking = specification_marking(form)
             
             self.object = form.save()
+
+            # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
+            if cargos.is_valid() == False:
+                return self.render_to_response(self.get_context_data(form=form, cargos=cargos))
+
             if cargos.is_valid():
                 cargos.instance = self.object
                 cargos.save()
@@ -52,7 +59,7 @@ class AddSpecificationView(CreateView):
     
 class ModifySpecificationView(UpdateView):
     model = Specification
-    template_name = 'specification-form.html'
+    template_name = 'specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -68,10 +75,36 @@ class ModifySpecificationView(UpdateView):
         cargos = context['cargos']
         with transaction.atomic():
             self.object = form.save()
+            
+            # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
+            if cargos.is_valid() == False:
+                return self.render_to_response(self.get_context_data(form=form, cargos=cargos))
+            
             if cargos.is_valid():
                 cargos.instance = self.object
                 cargos.save()
         return super(ModifySpecificationView, self).form_valid(form)
+        
+    def get_success_url(self):
+        return reverse_lazy('cargo_spec:my-lists')
+    
+
+class AcceptSpecificationView(View):
+    def post(self, request, pk):
+        spec = get_object_or_404(Specification, pk=pk)
+        spec.approved = True
+        spec.save()
+        
+        return redirect('cargo_spec:spec-detail', spec.pk)
+    
+    
+class DeleteSpecificationView(DeleteView):
+    model = Specification
     
     def get_success_url(self):
         return reverse_lazy('cargo_spec:my-lists')
+    
+    
+class SpecificationDetailView(DetailView):
+    model = Specification
+    template_name = 'specification_detail.html'
