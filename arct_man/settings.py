@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cargo_spec',
     'report',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +111,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+AUTH_USER_MODEL='users.User'
+
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'users:test'
 try:
     from arct_man.local_settings import DATABASES
 except ModuleNotFoundError:
