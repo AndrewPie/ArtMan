@@ -8,12 +8,12 @@ from django.core.validators import MinValueValidator
 class Specification(models.Model):
     STORAGE = (
         ('POKŁAD', 'pokład'),
-        ('ładownia', 'ładownia'),
-        ('kabina', 'kabina'),
+        ('ŁADOWNIA', 'ładownia'),
+        ('KABINA', 'kabina'),
         ('+4', '+4'), 
         ('-20', '-20'),
         ('-80', '-80'),
-        ('dowolne', 'dowolne')
+        ('DOWOLNE', 'dowolne')
 )
 
     marking = models.CharField(unique=True, max_length=64)
