@@ -7,6 +7,9 @@ from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 
+# from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
+
 from .models import Specification, CargoContent
 from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet
 from .utils import specification_marking
@@ -65,6 +68,10 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
     
     def get_context_data(self, **kwargs):
         data = super(ModifySpecificationView, self).get_context_data(**kwargs)
+        
+        if (self.object.owner != self.request.user) or (self.object.approved is True):
+            raise PermissionDenied()
+            
         if self.request.POST:
             data['cargos'] = CargoContentFormSet(self.request.POST, instance=self.object)
         else:
@@ -109,3 +116,10 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
 class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
     template_name = 'specification_detail.html'
+    
+    def get(self, request, *args, **kwargs):
+        context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
+        if (self.object.owner != self.request.user) or (self.object.approved is False):
+            # return HttpResponseForbidden('Nie masz dostępu do specyfikacji innych użytkowników')
+            raise PermissionDenied()
+        return context
