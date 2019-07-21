@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 
 from .models import Specification, CargoContent
@@ -11,7 +12,7 @@ from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet
 from .utils import specification_marking
 
 
-class MyListView(ListView):
+class MyListView(LoginRequiredMixin, ListView):
     model = Specification
     template_name = 'my_lists.html'
     ordering = ['-marking']
@@ -22,7 +23,7 @@ class MyListView(ListView):
         return queryset.filter(owner = owner_)
 
 
-class AddSpecificationView(CreateView):
+class AddSpecificationView(LoginRequiredMixin, CreateView):
     model = Specification
     template_name = 'specification_form.html'
     form_class = SpecificationForm
@@ -57,7 +58,7 @@ class AddSpecificationView(CreateView):
         return reverse_lazy('cargo_spec:my-lists')
     
     
-class ModifySpecificationView(UpdateView):
+class ModifySpecificationView(LoginRequiredMixin, UpdateView):
     model = Specification
     template_name = 'specification_form.html'
     form_class = SpecificationForm
@@ -89,7 +90,7 @@ class ModifySpecificationView(UpdateView):
         return reverse_lazy('cargo_spec:my-lists')
     
 
-class AcceptSpecificationView(View):
+class AcceptSpecificationView(LoginRequiredMixin, View):
     def post(self, request, pk):
         spec = get_object_or_404(Specification, pk=pk)
         spec.approved = True
@@ -98,13 +99,13 @@ class AcceptSpecificationView(View):
         return redirect('cargo_spec:spec-detail', spec.pk)
     
     
-class DeleteSpecificationView(DeleteView):
+class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     model = Specification
     
     def get_success_url(self):
         return reverse_lazy('cargo_spec:my-lists')
     
     
-class SpecificationDetailView(DetailView):
+class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
     template_name = 'specification_detail.html'
