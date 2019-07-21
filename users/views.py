@@ -20,7 +20,7 @@ class SignUp(View):
         form=SignupForm(request.POST)
         if form.is_valid():
             user=form.save()
-            return HttpResponse('dziala')
+            return redirect('users:login')
         else:
             return render(request,'signup.html',{'form':form})
     
