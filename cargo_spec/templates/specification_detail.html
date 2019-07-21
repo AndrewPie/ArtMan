@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Specyfikacja {{ object.marking }}:</h3>
+<p>Opis: {{ object.description }}</p>
+<p>Rodzaj opakowania: {{ object.package_type }}</p>
+<div>
+Spis zawartości:
+<ul>
+    {% for content in object.cargos_content.all %}
+        <li>{{ content.name }}</li>
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}
