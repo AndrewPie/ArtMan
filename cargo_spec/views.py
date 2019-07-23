@@ -137,15 +137,10 @@ class SpecificationDocumentUploadView(View):
         return render(request, self.template_name, {'form': form})
     
     def post(self, request, *args, **kwargs):
-        
-        # if resolve(request.path).url_name == 'cargo-spec:scan-upload':
-        #     data['type'] = 'scan'
-        # elif resolve(request.path).url_name == 'cargo-spec:photo-upload':
-        #     data['type'] = 'photo'
-        
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
+            form.instance.file_type = resolve(request.path_info).url_name
             form.instance.specification = spec
             owner = self.request.user
             form.instance.uploaded_by = owner

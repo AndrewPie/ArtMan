@@ -56,7 +56,11 @@ class CargoContent(models.Model):
 
 
 def get_upload_path(instance, filename, *args, **kwargs):
-    name = f'{instance.specification.marking}_{filename}'
+    if instance.file_type == 'scan-upload':
+        txt = 'scan'
+    elif instance.file_type == 'photo-upload':
+        txt = 'photo'
+    name = f'{instance.specification.marking}_{txt}_{filename}'
     path = f'cargo_spec/{instance.specification.marking}'
     return os.path.join(path, name)
 

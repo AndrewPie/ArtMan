@@ -49,6 +49,8 @@ CargoContentFormSet = inlineformset_factory(Specification, CargoContent, form=Ca
 
 
 class SpecificationDocumentForm(forms.ModelForm):
+    file_type = forms.CharField(widget=forms.HiddenInput(), required=False)
+    
     class Meta:
         model = SpecificationDocument
         fields = ['description', 'document']
