@@ -2,7 +2,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
-from .models import Specification, CargoContent
+from .models import Specification, CargoContent, SpecificationDocument
 
 class SpecificationForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,9 @@ class CargoContentForm(forms.ModelForm):
             field.error_messages = {'required': f'Pole "{field.label.capitalize()}" jest wymagane'}
 
 CargoContentFormSet = inlineformset_factory(Specification, CargoContent, form=CargoContentForm, extra=0, min_num=1, validate_min=True, max_num=20, validate_max=True, can_delete=True)
+
+
+class SpecificationDocumentForm(forms.ModelForm):
+    class Meta:
+        model = SpecificationDocument
+        fields = ['description', 'document']

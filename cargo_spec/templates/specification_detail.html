@@ -11,4 +11,9 @@ Spis zawartości:
     {% endfor %}
 </ul>
 </div>
+<form action="{% url 'cargo_spec:scan-upload' specification.id %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="specification_id" value="{{ specification.id }}" />
+        <button type="submit">Upload skanu</button>
+</form>
 {% endblock %}

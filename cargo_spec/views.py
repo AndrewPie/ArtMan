@@ -10,8 +10,10 @@ from datetime import datetime
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
-from .models import Specification, CargoContent
-from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet
+from django.urls import resolve
+
+from .models import Specification, CargoContent, SpecificationDocument
+from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SpecificationDocumentForm
 from .utils import specification_marking
 
 
@@ -123,3 +125,31 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
             # return HttpResponseForbidden('Nie masz dostępu do specyfikacji innych użytkowników')
             raise PermissionDenied()
         return context
+
+
+class SpecificationDocumentUploadView(View):
+    form_class = SpecificationDocumentForm
+    succes_url = reverse_lazy('cargo_spec:my-lists')
+    template_name = 'file_upload.html'
+    
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        
+        # if resolve(request.path).url_name == 'cargo-spec:scan-upload':
+        #     data['type'] = 'scan'
+        # elif resolve(request.path).url_name == 'cargo-spec:photo-upload':
+        #     data['type'] = 'photo'
+        
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
+            form.instance.specification = spec
+            owner = self.request.user
+            form.instance.uploaded_by = owner
+            form.save()
+            return redirect(self.succes_url)
+        else:
+            return render(request, self.template_name, {'form': form})

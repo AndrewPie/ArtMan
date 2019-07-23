@@ -5,7 +5,7 @@
 <script src="{% static 'total_value.js' %}"></script>
 
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
-
+{% comment %} Sprawdzenie czy jest to widok update. Jeśli nie, to dla create nie wyświetla tego co w poniższym if {% endcomment %}
 {% if request.get_full_path == modify_url %}
 <div><h2>Specyfikacja ładunkowa: {{ specification.marking }}</h2>
 <form action="{% url 'cargo_spec:delete-spec' specification.id %}" method="POST">
