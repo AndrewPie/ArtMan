@@ -11,6 +11,16 @@ Spis zawartości:
     {% endfor %}
 </ul>
 </div>
+{% if object.specificationdocument_set.all %}
+<div>
+Wgrane pliki:
+<ul>
+    {% for doc in object.specificationdocument_set.all %}
+        <li><a href="{{ doc.document.url}}">{{ doc.document }}</a></li>
+    {% endfor %}
+</ul>
+</div>
+{% endif %}
 <form action="{% url 'cargo_spec:scan-upload' specification.id %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="specification_id" value="{{ specification.id }}" />

@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied
 from django.urls import resolve
 
 from .models import Specification, CargoContent, SpecificationDocument
-from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SpecificationDocumentForm
+from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
 from .utils import specification_marking
 
 
@@ -127,11 +127,10 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SpecificationDocumentUploadView(View):
-    form_class = SpecificationDocumentForm
-    succes_url = reverse_lazy('cargo_spec:my-lists')
+class SpecificationScanUploadView(View):
     template_name = 'file_upload.html'
-    
+    form_class = SingleSpecificationDocumentForm
+
     def get(self, request, *args, **kwargs):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -145,6 +144,35 @@ class SpecificationDocumentUploadView(View):
             owner = self.request.user
             form.instance.uploaded_by = owner
             form.save()
-            return redirect(self.succes_url)
+            return redirect('cargo_spec:spec-detail', spec.pk)
         else:
             return render(request, self.template_name, {'form': form})
+            
+            
+class SpecificationPhotoUploadView(View):
+    template_name = 'file_upload.html'
+    form_class = MultipleSpecificationDocumentForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        files = request.FILES.getlist('file_field')
+        if form.is_valid():
+            spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
+            owner = self.request.user
+            for doc in files:
+                SpecificationDocument.objects.create(
+                    description = form.cleaned_data['description'],
+                    document = doc,
+                    uploaded_by = owner,
+                    specification = spec
+                )
+            return redirect('cargo_spec:spec-detail', self.kwargs['pk'])
+        else:
+            return render(request, self.template_name, {'form': form})
+            
+            
+#TODO: kasowanie wgranych plików
