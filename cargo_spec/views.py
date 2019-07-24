@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
@@ -10,13 +10,15 @@ from django.http import HttpResponse
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
-from .models import Specification, CargoContent
-from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet
-from .utils import specification_marking
+from django.urls import resolve
+
+from .models import Specification, CargoContent, SpecificationDocument
+from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
+from .utils import specification_marking, check_scan_file
+
 from openpyxl import Workbook,load_workbook
 from openpyxl.styles import Alignment
 from openpyxl.styles.borders import Border, Side
-
 import pandas as pd
 
 class MyListView(LoginRequiredMixin, ListView):
@@ -187,3 +189,62 @@ class test(View,LoginRequiredMixin):
             actual_row+=1
         wb.save('spis_1.xlsx') 
         return HttpResponse(user.username)
+
+
+class SpecificationScanUploadView(LoginRequiredMixin, View):
+    template_name = 'file_upload.html'
+    form_class = SingleSpecificationDocumentForm
+
+    def get(self, request, *args, **kwargs):
+        spec = Specification.objects.get(pk=self.kwargs['pk'])
+        if (spec.owner != self.request.user) or (check_scan_file(spec.marking)):
+            raise PermissionDenied()
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
+            form.instance.file_type = resolve(request.path_info).url_name
+            form.instance.specification = spec
+            owner = self.request.user
+            form.instance.uploaded_by = owner
+            form.save()
+            return redirect('cargo_spec:spec-detail', spec.pk)
+        else:
+            return render(request, self.template_name, {'form': form})
+            
+            
+class SpecificationPhotoUploadView(LoginRequiredMixin, View):
+    template_name = 'file_upload.html'
+    form_class = MultipleSpecificationDocumentForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        files = request.FILES.getlist('file_field')
+        if form.is_valid():
+            spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
+            owner = self.request.user
+            for doc in files:
+                SpecificationDocument.objects.create(
+                    description = form.cleaned_data['description'],
+                    document = doc,
+                    uploaded_by = owner,
+                    specification = spec
+                )
+            return redirect('cargo_spec:spec-detail', self.kwargs['pk'])
+        else:
+            return render(request, self.template_name, {'form': form})
+            
+            
+class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
+    model = SpecificationDocument
+    
+    def get_success_url(self):
+        spk = self.kwargs['spk']
+        return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})

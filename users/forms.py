@@ -20,6 +20,7 @@ class SignupForm(UserCreationForm):
     def add_premissions(user):
         print(type(user.user_type))
         content_type = ContentType.objects.get_for_model(get_user_model())
+        
         MEDICAL=[ "Can add medical report",
                   "Can del medical report",
                   "Can change medical report",]
@@ -29,7 +30,9 @@ class SignupForm(UserCreationForm):
         SUPPLY=[ "Can add supply report",
                   "Can del supply report",
                   "Can change supply report",]
-        group=[MEDICAL,TECHNICAL,SUPPLY]
+        ADMINISTRATION=["Can do anything",]
+        
+        group=[MEDICAL,TECHNICAL,SUPPLY,ADMINISTRATION]
         
         for i in group[user.user_type]:
             permission = Permission.objects.get(

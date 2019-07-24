@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse 
 from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth import get_user_model,authenticate,login,logout
-from.form import LoginForm,SignupForm
+from .forms import LoginForm,SignupForm
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 

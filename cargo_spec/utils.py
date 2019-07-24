@@ -1,4 +1,6 @@
+import os
 from datetime import datetime
+from django.conf import settings
 
 from .models import Specification
 
@@ -14,3 +16,14 @@ def specification_marking(self):
         number = len(query_list) + 1
     
     return f'{mark}-{number}'
+
+
+def check_scan_file(marking):
+    scan_dir = f'{settings.BASE_DIR}/media/cargo_spec/{marking}/scan'
+    if os.path.exists(scan_dir) and os.path.isdir(scan_dir):
+        if not os.listdir(scan_dir):
+            return False
+        else:    
+            return True
+    else:
+        return False

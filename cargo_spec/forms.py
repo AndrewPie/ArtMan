@@ -2,7 +2,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
-from .models import Specification, CargoContent
+from .models import Specification, CargoContent, SpecificationDocument
 
 class SpecificationForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,23 @@ class CargoContentForm(forms.ModelForm):
             field.error_messages = {'required': f'Pole "{field.label.capitalize()}" jest wymagane'}
 
 CargoContentFormSet = inlineformset_factory(Specification, CargoContent, form=CargoContentForm, extra=0, min_num=1, validate_min=True, max_num=20, validate_max=True, can_delete=True)
+
+
+class SingleSpecificationDocumentForm(forms.ModelForm):
+    file_type = forms.CharField(widget=forms.HiddenInput(), required=False)
+    
+    class Meta:
+        model = SpecificationDocument
+        fields = ['description', 'document']
+        labels = {
+            'description': 'Opis',
+            'document': 'Plik'
+        }
+        error_messages = {
+            'document': {'required': 'Należy wybrać plik'},
+        }
+
+
+class MultipleSpecificationDocumentForm(forms.Form):
+    description = forms.CharField(max_length=255, required=False, label='Opis')
+    file_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), label='Plik/Pliki', error_messages={'required': 'Należy wybrać plik/pliki'})
