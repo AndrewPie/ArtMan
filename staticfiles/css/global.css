@@ -1,0 +1,36 @@
+
+body {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #f8f9fa;
+    padding-top: 50px;
+}
+h1 {
+    text-align: center;
+}
+p > label{
+    width: 250px;
+}
+p > input{
+    width: 450px;
+}
+#id_dimension_length, #id_dimension_width, #id_dimension_height, #id_total_value, #id_weight{
+    width: 100px;
+}
+
+tbody > tr >td:nth-of-type(1)>input:nth-of-type(3){
+    width: 250px
+}
+tbody > tr >td:nth-of-type(2)>input:nth-of-type(1){
+    width: 100px
+}
+tbody > tr >td:nth-of-type(3)>input:nth-of-type(1) {
+    width: 75px
+}
+tbody > tr >td:nth-of-type(4)>input:nth-of-type(1){
+    width: 100px
+}
+tbody > tr >td:nth-of-type(5)>input:nth-of-type(1){
+    width: 100px
+}

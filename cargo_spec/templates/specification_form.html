@@ -3,6 +3,7 @@
 {% load static %}
 <script src="{% static 'jquery.formset.js' %}"></script>
 <script src="{% static 'total_value.js' %}"></script>
+    <script src="{% static 'add_class.js' %}"></script>
 
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
 
@@ -16,8 +17,11 @@
 </div>
 {% endif %}
 
+
+<h3>Specyfikacja skrzyni</h3>
+    </br>
 <div>
-    <form action="" method="POST">{% csrf_token %}
+    <form class="form-group" action="" method="POST">{% csrf_token %}
         {{ form.as_p }}
         <table>
             {{ cargos.management_form }}
@@ -70,5 +74,12 @@
         prefix: 'cargos_content',
         added: $('input[name^="cargos_content"][name$="value"]').addClass("value"),
     });
+
+function myFunction() {
+  var element = document.getElementById("myDIV");
+  element.classList.add("mystyle");
+}
 </script>
+
+
 {% endblock %}

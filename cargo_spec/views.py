@@ -115,7 +115,7 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     
 class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
-    template_name = 'specification_detail.html'
+    template_name = 'specification_detail.mhtl'
     
     def get(self, request, *args, **kwargs):
         context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
