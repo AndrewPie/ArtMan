@@ -9,6 +9,11 @@ Spis zawartości:
     {% for content in object.cargos_content.all %}
         <li>{{ content.name }}</li>
     {% endfor %}
+
 </ul>
 </div>
+<form action="" method="post">
+    {%csrf_token%}
+    <input type="submit" value="to excel">
+</form>
 {% endblock %}
