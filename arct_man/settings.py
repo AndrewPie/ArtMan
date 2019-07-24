@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cargo_spec',
     'report',
     'users',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
@@ -14,7 +14,7 @@ from django.urls import resolve
 
 from .models import Specification, CargoContent, SpecificationDocument
 from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from .utils import specification_marking
+from .utils import specification_marking, check_scan_file
 
 
 class MyListView(LoginRequiredMixin, ListView):
@@ -127,11 +127,14 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SpecificationScanUploadView(View):
+class SpecificationScanUploadView(LoginRequiredMixin, View):
     template_name = 'file_upload.html'
     form_class = SingleSpecificationDocumentForm
 
     def get(self, request, *args, **kwargs):
+        spec = Specification.objects.get(pk=self.kwargs['pk'])
+        if (spec.owner != self.request.user) or (check_scan_file(spec.marking)):
+            raise PermissionDenied()
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
     
@@ -149,7 +152,7 @@ class SpecificationScanUploadView(View):
             return render(request, self.template_name, {'form': form})
             
             
-class SpecificationPhotoUploadView(View):
+class SpecificationPhotoUploadView(LoginRequiredMixin, View):
     template_name = 'file_upload.html'
     form_class = MultipleSpecificationDocumentForm
 
@@ -175,4 +178,9 @@ class SpecificationPhotoUploadView(View):
             return render(request, self.template_name, {'form': form})
             
             
-#TODO: kasowanie wgranych plików
+class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
+    model = SpecificationDocument
+    
+    def get_success_url(self):
+        spk = self.kwargs['spk']
+        return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})

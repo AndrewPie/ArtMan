@@ -58,7 +58,7 @@ def get_upload_path(instance, filename, *args, **kwargs):
     except Exception:
         txt = 'photo'
     name = f'{instance.specification.marking}_{txt}_{filename}'
-    path = f'cargo_spec/{instance.specification.marking}'
+    path = f'cargo_spec/{instance.specification.marking}/{txt}'
     return os.path.join(path, name)
 
 class SpecificationDocument(models.Model):
@@ -66,3 +66,11 @@ class SpecificationDocument(models.Model):
     document = models.FileField(upload_to=get_upload_path)
     uploaded_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     specification = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    
+    @property
+    def filename(self):
+        return os.path.basename(self.document.name)
+
+    @property
+    def only_file_path(self):
+        return os.path.dirname(self.document.name)
