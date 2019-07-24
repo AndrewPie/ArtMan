@@ -1,9 +1,9 @@
+import os
 from django.contrib import admin
 
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
-
 
 class Specification(models.Model):
     STORAGE = (
@@ -38,8 +38,6 @@ class Specification(models.Model):
     def __str__(self):
         return self.marking
 
-#TODO: upload zdjęcia
-
 
 class CargoContent(models.Model):
     name = models.CharField(max_length=128)
@@ -51,3 +49,28 @@ class CargoContent(models.Model):
     
     def __str__(self):
         return f'{self.specification.marking} - {self.name}'
+    
+
+def get_upload_path(instance, filename, *args, **kwargs):
+    try:
+        if instance.file_type == 'scan-upload':
+            txt = 'scan'
+    except Exception:
+        txt = 'photo'
+    name = f'{instance.specification.marking}_{txt}_{filename}'
+    path = f'cargo_spec/{instance.specification.marking}/{txt}'
+    return os.path.join(path, name)
+
+class SpecificationDocument(models.Model):
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to=get_upload_path)
+    uploaded_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    specification = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    
+    @property
+    def filename(self):
+        return os.path.basename(self.document.name)
+
+    @property
+    def only_file_path(self):
+        return os.path.dirname(self.document.name)

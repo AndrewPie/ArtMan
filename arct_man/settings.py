@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'cargo_spec',
     'report',
     'users',
+    'django_cleanup',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL='users.User'
 
