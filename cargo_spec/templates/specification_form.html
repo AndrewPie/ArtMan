@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
+{% load crispy_forms_tags %}
 <script src="{% static 'jquery.formset.js' %}"></script>
 <script src="{% static 'total_value.js' %}"></script>
 
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
 {% comment %} Sprawdzenie czy jest to widok update. Jeśli nie, to dla create nie wyświetla tego co w poniższym if {% endcomment %}
 {% if request.get_full_path == modify_url %}
-<div><h2>Specyfikacja ładunkowa: {{ specification.marking }}</h2>
+<div class='container'>
+<div class='card'>
+<div class='card-header'><center><h3>Specyfikacja ładunkowa:{{ specification.marking }}</h3></center>
 <form action="{% url 'cargo_spec:delete-spec' specification.id %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="specification_id" value="{{ specification.id }}" />
@@ -16,11 +19,11 @@
 </div>
 {% endif %}
 
-<div>
+<div class="container">
     <form action="" method="POST">{% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         <table>
-            {{ cargos.management_form }}
+            {{ cargos.management_form|crispy }}
 
             {% for form in cargos.forms %}
                 {% if forloop.first %}
@@ -43,13 +46,13 @@
                                 {% endfor %}
                             {% endif %}
                             {{ field.errors.as_ul }}
-                            {{ field }}
+                            {{ field|as_crispy_field }}
                         </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
         </table>
-        <input type="submit" value="Zapisz"/>
+        <input type="submit" class="btn btn-primary" value="Zapisz"/>
     </form>
 </div>
 
@@ -58,7 +61,7 @@
     <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="specification_id" value="{{ specification.id }}" />
-        <button type="submit" onclick='return confirm("Czy napewno zatwierdzasz specyfikację {{ specification.marking }}?");'>Zatwierdź specyfikację</button>
+        <button type="submit" class="btn btn-primary" onclick='return confirm("Czy napewno zatwierdzasz specyfikację {{ specification.marking }}?");'>Zatwierdź specyfikację</button>
     </form>
     {% endif %}
 {% endif %}
