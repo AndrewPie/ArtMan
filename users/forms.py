@@ -17,7 +17,7 @@ class SignupForm(UserCreationForm):
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm Password'})
         self.fields['user_type'].widget.attrs.update({'class': 'custom-select d-block w-100', 'placeholder': 'User Type'})
-       
+
     def save(self,commit=True):
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.clean_password2())
