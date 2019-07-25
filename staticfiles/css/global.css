@@ -3,11 +3,12 @@ body {
   position: absolute;
   height: 100%;
   width: 100%;
-  background-color: #f8f9fa;
+  background-color: #9fcdff !important;
     padding-top: 50px;
 }
 h1 {
     text-align: center;
+    color: #002752;
 }
 p > label{
     width: 250px;
