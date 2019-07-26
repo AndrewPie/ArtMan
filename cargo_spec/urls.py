@@ -4,7 +4,7 @@ from .views import MyListView, AddSpecificationView, ModifySpecificationView, De
 
 app_name = 'cargo_spec'
 urlpatterns = [
-    path('my_lists/', MyListView.as_view(), name='my-lists'),
+    path('', MyListView.as_view(), name='my-lists'),
     path('specification/add', AddSpecificationView.as_view(), name='add-spec'),
     path('specification/<int:pk>/modify', ModifySpecificationView.as_view(), name='modify-spec'),
     path('specification/<int:pk>/delete', DeleteSpecificationView.as_view(), name='delete-spec'),
