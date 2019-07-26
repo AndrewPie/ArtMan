@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class=''>
+    <h1>{{ section.section_master.title }} - {{ section.title }}</h1>
+</div>
+<div class=''>
+    <h2>Wpisy:</h2>
+    <ul>
+        {% for note in note_list %}
+            <li>{{ note.title }}
+        {% endfor %}
+    </ul>
+</div>
+<div class=''>
+<button id='add-note'>Dodaj wpis</button>
+</div>
+<div class='new-note' hidden='true'>
+    <form action="{% url 'report:note-list' section.id %}" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Dodaj wpis</button>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#add-note").click(function(){
+            $("#add-note").attr('hidden', 'true')
+            $(".new-note").toggle().removeAttr('hidden');
+        });
+    });
+</script>
+{% endblock %}

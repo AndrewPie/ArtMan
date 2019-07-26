@@ -1,0 +1,10 @@
+{% comment %} {% if not section.section_master %}
+    {{ section.title }}
+{% else %} {% endcomment %}
+    <a href="{% url 'report:note-list' section.id %}">{{ section.title }}</a>
+{% comment %} {% endif %} {% endcomment %}
+<ol>
+    {% for subsection in section.subsections.all %}
+        <li>{% include 'report/sections.html' with section=subsection %}</li>
+    {% endfor %}
+</ol>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class=''>
+    <h1>Sprawozdanie mięsięczne ({{ report.year }}-{{ report.month }})</h1>
+</div>
+<div class=''>
+<h3>Spis treści</h3>
+<ol>
+    {% for section in report.main_sections %}
+        <li>{% include 'report/sections.html' with section=section %}
+    {% endfor %}
+</ol>
+</div>
+{% endblock %}
