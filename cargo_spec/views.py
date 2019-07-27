@@ -4,22 +4,23 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db import transaction
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from datetime import datetime
 from django.http import HttpResponse
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
 from django.urls import resolve
+from django.contrib.auth import get_user_model
 
-from .models import Specification, CargoContent, SpecificationDocument
+from .models import Specification, CargoContent, SpecificationDocument,SpecificationDocumentsExcel
 from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from .utils import specification_marking, check_scan_file
+from .utils import specification_marking, check_scan_file,AddExcelToSpec
 
-from openpyxl import Workbook,load_workbook
-from openpyxl.styles import Alignment
-from openpyxl.styles.borders import Border, Side
-import pandas as pd
+from django.templatetags.static import static
+import os
+
+
 
 class MyListView(LoginRequiredMixin, ListView):
     model = Specification
@@ -108,7 +109,8 @@ class AcceptSpecificationView(LoginRequiredMixin, View):
         spec = get_object_or_404(Specification, pk=pk)
         spec.approved = True
         spec.save()
-        
+        AddExcelToSpec(request,spec)
+        #############
         return redirect('cargo_spec:spec-detail', spec.pk)
     
     
@@ -138,57 +140,7 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
 
 
 
-class test(View,LoginRequiredMixin):
-    def __init__(self):
-        self.thin_border = Border(left=Side(style='thin'), 
-                        right=Side(style='thin'), 
-                        top=Side(style='thin'), 
-                        bottom=Side(style='thin'))
-    def get(self,request):
-        user=request.user
-        spec=Specification.objects.get(pk=request.session['doc_id'])
-        cargo=CargoContent.objects.filter(specification=spec)
-        dataframe=pd.DataFrame(list(cargo.values()),index=[i for i in range(1,len(cargo.values())+1) ])
-        wb=load_workbook('spis.xlsx')
-        wb2=load_workbook('stopka.xlsx')
-        ws=wb.active
-        ws2=wb2.active
-        print(request.session['doc_id'])
-        ###################Dane
-        ws['C4'].value=f'{user.first_name} {user.last_name}'
-        ws['C5'].value= spec.package_type
-        ws['C6'].value=f'{spec.dimension_length}/{spec.dimension_width}/{spec.dimension_height}' 
-        ws['C7'].value=spec.weight
-        ws['C8'].value=spec.storage
 
-        
-        
-        footer=[ws2.cell(row=i,column=1).value for i in range(1,8)]
-        actual_row=14
-        ws.insert_rows(actual_row, amount=len(dataframe.values))
-        for i in range(1,len(dataframe.values)+1):
-            # print(dataframe.iloc[i])
-            ws['A{}'.format(actual_row)]=i
-            ws['B{}'.format(actual_row)]='{} ({})'.format(dataframe.loc[i].at['name'],dataframe.loc[i].at['serial_number'])  
-            ws['C{}'.format(actual_row)]=dataframe.loc[i].at['quantity']
-            ws.merge_cells(f'D{actual_row}:E{actual_row}')
-            ws['D{}'.format(actual_row)]=dataframe.loc[i].at['unit_of_measurement']
-            ws.merge_cells(f'F{actual_row}:G{actual_row}')
-            ws['F{}'.format(actual_row)]=dataframe.loc[i].at['value']
-            for item in list('ABCDEFG'):
-                ws['{}{}'.format(item,actual_row)].border=self.thin_border
-
-            actual_row+=1
-        actual_row+=1
-        for i in footer:
-            actual_cell=ws[f'A{actual_row}']
-            ws.merge_cells(f'A{actual_row}:G{actual_row}') 
-            actual_cell.value=i
-            alignment_obj = actual_cell.alignment.copy(horizontal='center', vertical='center')
-            actual_cell.alignment = alignment_obj
-            actual_row+=1
-        wb.save('spis_1.xlsx') 
-        return HttpResponse(user.username)
 
 
 class SpecificationScanUploadView(LoginRequiredMixin, View):
@@ -227,10 +179,12 @@ class SpecificationPhotoUploadView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         files = request.FILES.getlist('file_field')
+        print(files)
         if form.is_valid():
             spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
             owner = self.request.user
             for doc in files:
+                
                 SpecificationDocument.objects.create(
                     description = form.cleaned_data['description'],
                     document = doc,
@@ -248,3 +202,18 @@ class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         spk = self.kwargs['spk']
         return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})
+
+class showfiles(UserPassesTestMixin,View):
+    redirect_url='/'
+    def test_func(self):
+        isStaff=self.request.user.is_staff==True
+        print(isStaff)
+        return isStaff
+    def get(self,request):
+        list=SpecificationDocumentsExcel.objects.select_related('spec').order_by('spec__owner')
+        return render(request,'test.html',{'docs':list})#
+        
+
+
+
+        

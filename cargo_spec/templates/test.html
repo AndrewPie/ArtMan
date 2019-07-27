@@ -1,12 +1,37 @@
+{% load upload_extras %}
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
-    <h1>Działa!!!!!</h1>
+        {% if docs%}
+        <table>
+                <tr>
+                    <th>Właściciel</th>
+                    <th>plik excel</th>
+                </tr>
+                {%for i in docs%}
+                <tr>
+                    <td>
+                            {{i.spec.owner}}
+                    </td>
+                    <td><a href="{{i.excel.url}}" download>
+                            {{i.name}} 
+                        </a></td>
+                </tr>
+                {%endfor%}
+            </table>
+        {%else%}
+        <h1>brak zapisanych plikow</h1>
+        {%endif%}
+   
 </body>
+
 </html>

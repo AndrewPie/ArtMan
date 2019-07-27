@@ -31,7 +31,7 @@ class User(AbstractUser):
                 ("supply_section_add_report", "Can add supply report"),
                 ("supply_section_del_report", "Can del supply report"),
                 ("supply_section_change_report", "Can change supply report"),
-                ("administration","Can do anything"),
+                
             ]
 
 # dodac kierownik , administrator cos z wyzszymi uprawnieniami
