@@ -18,10 +18,10 @@
 </form>
 </div>
 {% endif %}
-
-
-    <!--==================-->
  <div class="container">
+<form action="" method="POST"> {% csrf_token %}
+    <!--==================-->
+
   <div class="row">
    <div class="col-1"></div>
    <div class="col-10" id="central">
@@ -63,16 +63,12 @@
            </div>
                </div>
 <div class="row">
-    <div class="col-6">
+    <div class="col-12">
 <div class="form-group">
                {{ form.storage|as_crispy_field }}
            </div>
 </div>
-    <div class="col-6">
-        <div class="form-group">
-               {{ form.dimension_width|as_crispy_field }}
-           </div>
-    </div>
+
 </div>
  <div class="row">
       <div class="col-12">
@@ -88,14 +84,16 @@
 <div class="form-group">
                {{ form.total_value|as_crispy_field }}
            </div>
+      </div>
 <div class="col-4"></div>
 
 </div>
 
- </div>
+
 <!--==========================-->
   <div class="row">
    <div class="col-12" id="central">
+   <form action="" method="POST">{% csrf_token %}
         <table>
 
             {{ cargos.management_form|crispy }}
@@ -128,9 +126,11 @@
             {% endfor %}
         </table>
         <button  type="submit"  class="btn btn-success">Zapisz</button>
-    </form>
+
+</form>
 </div>
-  </div>
+</div>
+
 {% if request.get_full_path == modify_url %}
     {% if not specification.approved %}
     <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
@@ -141,11 +141,8 @@
     {% endif %}
 {% endif %}
 
-   </div>
+
 <div class="col-1"></div>
-   </div>
-  </div>
-    <!-- +++++++++++++++++++++++++++++++++++++++++++++++-->
 
 
 <script type="text/javascript">
