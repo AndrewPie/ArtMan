@@ -5,8 +5,10 @@ from django.contrib.auth.models import User
 from .models import Specification, CargoContent, SpecificationDocument
 
 class SpecificationForm(forms.ModelForm):
+
     class Meta:
         model = Specification
+
         exclude = ['marking', 'owner', 'capacity', 'approved']
         widgets = {
             'total_value': forms.NumberInput(attrs={'readonly': True}),
@@ -26,8 +28,15 @@ class SpecificationForm(forms.ModelForm):
             'dimension_width': {'min_value': "Wartość musi być conajmniej równa 1"},
             'dimension_height': {'min_value': "Wartość musi być conajmniej równa 1"}
         }
-                    
-    
+"""
+    def __init__(self, *args, **kwargs):
+        super(SpecificationForm, self).__init__(*args, **kwargs)
+        self.fields['package_type'].widget.attrs \
+            .update({
+            'class': 'col-6'
+        })
+"""
+
 class CargoContentForm(forms.ModelForm):
     class Meta:
         model = CargoContent

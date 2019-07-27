@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Specyfikacje ładunkowe:</h3>
+<h3 class="col-12">Specyfikacje ładunkowe</h3>
 <ul>
     {% for object in object_list %}
         {% if object.approved %}
@@ -10,5 +10,6 @@
         {% endif %}
     {% endfor %}
 </ul>
-<a href="{% url 'cargo_spec:add-spec' %}">Dodaj specyfikację</a>
+<a href="{% url 'cargo_spec:add-spec' %}"><button type="button" class="btn btn-primary">Dodaj specyfikację</button>
+</a>
 {% endblock %}
