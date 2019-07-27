@@ -211,7 +211,7 @@ class showfiles(UserPassesTestMixin,View):
         return isStaff
     def get(self,request):
         list=SpecificationDocumentsExcel.objects.select_related('spec').order_by('spec__owner')
-        return render(request,'test.html',{'docs':list})#
+        return render(request,'whole_list.html',{'docs':list})#
         
 
 

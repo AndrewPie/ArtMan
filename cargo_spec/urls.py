@@ -6,7 +6,7 @@ from .views import showfiles,MyListView, AddSpecificationView, ModifySpecificati
 app_name = 'cargo_spec'
 urlpatterns = [
 
-    path('list/',showfiles.as_view(),name='list'),
+    path('whole_list/',showfiles.as_view(),name='whole_list'),
 
     path('my_lists/', MyListView.as_view(), name='my-lists'),
     path('specification/add', AddSpecificationView.as_view(), name='add-spec'),

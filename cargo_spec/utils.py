@@ -55,6 +55,7 @@ def AddExcelToSpec(request,specification):
     ws2=wb2.active
     
     ###################Dane
+    ws['C3'].value=f'{spec.marking}'
     ws['C4'].value=f'{user.first_name} {user.last_name}'
     ws['C5'].value= spec.package_type
     ws['C6'].value=f'{spec.dimension_length}/{spec.dimension_width}/{spec.dimension_height}' 
@@ -77,6 +78,9 @@ def AddExcelToSpec(request,specification):
         for item in list('ABCDEFG'):
             ws['{}{}'.format(item,actual_row)].border=thin_border
         actual_row+=1
+        # ws['F{}'.format(actual_row)]=dataframe.loc[i].at['total_value']
+        # ws['F{}'.format(actual_row)].border=thin_border
+
     actual_row+=1
     
     temp_file=f'{path_project_dir}/media/cargo_spec/excel_files/temp.xlsx'
