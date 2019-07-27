@@ -54,4 +54,11 @@ Wgrane pliki:
         <input type="hidden" name="specification_id" value="{{ specification.id }}" />
         <button type="submit">Upload zdjęć</button>
 </form>
+{%for i in specification.specificationdocumentsexcel_set.all%}
+<form action="{{i.excel.url}}" method="POST">
+        {% csrf_token %}
+        
+        <button type="submit">Pobierz excel</button>
+</form>
+{%endfor%}
 {% endblock %}

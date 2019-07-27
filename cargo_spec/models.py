@@ -59,7 +59,7 @@ def get_upload_path(instance, filename, *args, **kwargs):
         txt = 'photo'
     name = f'{instance.specification.marking}_{txt}_{filename}'
     path = f'cargo_spec/{instance.specification.marking}/{txt}'
-    return os.path.join(path, name)
+    return os.path.join(path , name)
 
 class SpecificationDocument(models.Model):
     description = models.CharField(max_length=255, blank=True)
@@ -74,3 +74,13 @@ class SpecificationDocument(models.Model):
     @property
     def only_file_path(self):
         return os.path.dirname(self.document.name)
+
+class SpecificationDocumentsExcel(models.Model):
+    excel=models.FileField(upload_to='cargo_spec/excel_files/')
+    spec=models.ForeignKey(Specification,on_delete=models.CASCADE,default=None)
+
+    @property
+    def name(self):
+        return os.path.basename(self.excel.name)
+    def __str__(self):
+        return self.excel.name

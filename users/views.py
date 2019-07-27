@@ -10,6 +10,8 @@ from .forms import LoginForm,SignupForm
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+# ------------------testy do wywalenia
+import pandas as pd
 # Create your views here.
 class SignUp(View):
     
@@ -51,5 +53,4 @@ class Logout(View):
     def get(selq,request):
         logout(request)
         return redirect('users:login')
-
 

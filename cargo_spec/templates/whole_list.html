@@ -1,0 +1,25 @@
+{%extends 'base.html'%}
+{% load upload_extras %}
+{%block content%}
+        {% if docs%}
+        <table>
+                <tr>
+                    <th>Właściciel</th>
+                    <th>plik excel</th>
+                </tr>
+                {%for i in docs%}
+                <tr>
+                    <td>
+                            {{i.spec.owner}}
+                    </td>
+                    <td><a href="{{i.excel.url}}" download>
+                            {{i.name}} 
+                        </a></td>
+                </tr>
+                {%endfor%}
+            </table>
+        {%else%}
+        <h1>brak zapisanych plikow</h1>
+        {%endif%}
+   
+{%endblock%}

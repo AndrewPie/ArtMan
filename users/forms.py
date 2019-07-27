@@ -22,15 +22,15 @@ class SignupForm(UserCreationForm):
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.clean_password2())
         user.is_active=False
-        print(user.get_all_permissions())
         if commit:
             user.save()
             self.add_premissions(user)
+            print(user.is_staff)
             return user
     @staticmethod
     def add_premissions(user):
-        print(type(user.user_type))
         content_type = ContentType.objects.get_for_model(get_user_model())
+        
         MEDICAL=[ "Can add medical report",
                   "Can del medical report",
                   "Can change medical report",]
@@ -40,14 +40,19 @@ class SignupForm(UserCreationForm):
         SUPPLY=[ "Can add supply report",
                   "Can del supply report",
                   "Can change supply report",]
-        group=[MEDICAL,TECHNICAL,SUPPLY]
         
-        for i in group[user.user_type]:
-            permission = Permission.objects.get(
-            name=i,
-            content_type=content_type,
-            )
-            user.user_permissions.add(permission)
+        
+        group=[MEDICAL,TECHNICAL,SUPPLY]
+        if user.user_type!=3:
+            for i in group[user.user_type]:
+                
+                permission = Permission.objects.get(
+                name=i,
+                content_type=content_type,
+                )
+                user.user_permissions.add(permission)
+        else:
+            user.is_staff=True
         user.save()
         
 
