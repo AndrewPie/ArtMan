@@ -12,9 +12,10 @@ class NoteForm(forms.ModelForm):
 class SectionForm(forms.ModelForm):
     class Meta:
         model = Section
-        exclude = ['section_master', 'report']
+        fields = ['section_master', 'title', 'text_entry', 'text_end']
         labels = {
             'title': 'Nazwa',
             'text_entry': 'Tekst początkowy',
             'text_end': 'Tekst końcowy',
+            'section_master': 'Sekcja główna'
         }

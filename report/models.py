@@ -26,11 +26,14 @@ class Report(models.Model):
     
 
 class Section(models.Model):
-    title = models.CharField(max_length=128)
+    title = models.CharField(max_length=128, unique=True)
     text_entry = models.CharField(max_length=128, blank=True)
     text_end = models.CharField(max_length=128, blank=True)
     section_master = models.ForeignKey('self', related_name='subsections', on_delete=models.CASCADE, blank=True, null=True)
     report = models.ForeignKey(Report, related_name='sections', on_delete=models.CASCADE, blank=True, null=True)
+    
+    class Meta:
+        ordering = ['pk']
     
     def __str__(self):
         if self.section_master:

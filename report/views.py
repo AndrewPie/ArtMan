@@ -50,3 +50,21 @@ class NoteView(LoginRequiredMixin, CreateView):
 class AddSectionView(CreateView):
     form_class = SectionForm
     template_name = 'report/add_section.html'
+    
+    def get_context_data(self, **kwargs):
+        data = super(AddSectionView, self).get_context_data(**kwargs)
+        year_ = datetime.now().year
+        month_ = datetime.now().month
+        data['report'] = get_object_or_404(Report, year=year_, month=month_)
+        return data
+        
+    def form_valid(self, form):
+        context = self.get_context_data()
+        report = context['report']
+        with transaction.atomic():
+            form.instance.report = report
+            self.object = form.save()
+        return super(AddSectionView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('report:contents-page')
