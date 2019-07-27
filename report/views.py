@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 from report.models import Report, Section, Note
-from report.forms import NoteForm
+from report.forms import NoteForm, SectionForm
 
 
 class ReportContentView(LoginRequiredMixin, DetailView):
@@ -45,3 +45,8 @@ class NoteView(LoginRequiredMixin, CreateView):
         context = self.get_context_data()
         section = context['section']
         return reverse_lazy('report:note-list', kwargs={'pk': section.pk})
+
+
+class AddSectionView(CreateView):
+    form_class = SectionForm
+    template_name = 'report/add_section.html'

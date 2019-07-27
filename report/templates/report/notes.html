@@ -2,16 +2,22 @@
 {% block content %}
 
 <div class=''>
-    <h1>{{ section.section_master.title }} - {{ section.title }}</h1>
+    {% if section.section_master %}
+        <h1>{{ section.section_master.title }} - {{ section.title }}</h1>
+    {% else %}
+        <h1>{{ section.title }}</h1>
+    {% endif %}
 </div>
-<div class=''>
-    <h2>Wpisy:</h2>
-    <ul>
-        {% for note in note_list %}
-            <li>{{ note.title }}
-        {% endfor %}
-    </ul>
-</div>
+{% if note_list %}
+    <div class=''>
+        <h2>Wpisy:</h2>
+        <ul>
+            {% for note in note_list %}
+                <li>{{ note.title }}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 <div class=''>
 <button id='add-note'>Dodaj wpis</button>
 </div>

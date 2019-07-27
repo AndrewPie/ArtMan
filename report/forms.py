@@ -7,3 +7,14 @@ class NoteForm(forms.ModelForm):
         model = Note
         fields = ['title']
         labels = {'title': 'Wpis'}
+        
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        exclude = ['section_master', 'report']
+        labels = {
+            'title': 'Nazwa',
+            'text_entry': 'Tekst początkowy',
+            'text_end': 'Tekst końcowy',
+        }
