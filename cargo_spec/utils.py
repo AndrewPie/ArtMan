@@ -95,10 +95,10 @@ def AddExcelToSpec(request,specification):
     actual_row+=1
     temp_file=f'{path_project_dir}/media/cargo_spec/excel_files/temp.xlsx'
     
-    if not os.path.exists(temp_file):
+    if  os.path.exists(temp_file)==False:
         os.mkdir(f'{path_project_dir}/media/cargo_spec/excel_files')
-        fh= open(temp_file, 'w')
-        fh.close()
+    #     fh= open(temp_file, 'w')
+        # fh.close()
     # file_path=f'{path_project_dir}/media/cargo_spec/excel_files/{spec.marking}.xlsx'
     
     for i in footer:
