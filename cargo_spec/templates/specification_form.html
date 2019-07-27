@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
+    {% load crispy_forms_tags %}
 <script src="{% static 'jquery.formset.js' %}"></script>
 <script src="{% static 'total_value.js' %}"></script>
     <script src="{% static 'add_class.js' %}"></script>
@@ -18,13 +20,85 @@
 {% endif %}
 
 
-<h3>Specyfikacja skrzyni</h3>
-    </br>
-<div>
-    <form class="form-group" action="" method="POST">{% csrf_token %}
-        {{ form.as_p }}
+    <!--==================-->
+ <div class="container">
+  <div class="row">
+   <div class="col-1"></div>
+   <div class="col-10" id="central">
+ <div class="container">
+            <div class="row">
+       <div class="col-12">
+           <div class="form-group">
+               <h1>Specyfikacja skrzyni</h1>
+           </div>
+           </div>
+               </div>
+  <div class="row">
+       <div class="col-12">
+           <div class="form-group">
+               {{ form.package_type|as_crispy_field }}
+           </div>
+           </div>
+               </div>
+ <div class="row">
+       <div class="col-3">
+           <div class="form-group">
+               {{ form.dimension_length|as_crispy_field }}
+           </div>
+           </div>
+      <div class="col-3">
+           <div class="form-group">
+               {{ form.dimension_width|as_crispy_field }}
+           </div>
+           </div>
+      <div class="col-3">
+           <div class="form-group">
+               {{ form.dimension_height|as_crispy_field }}
+           </div>
+           </div>
+      <div class="col-3">
+           <div class="form-group">
+               {{ form.weight|as_crispy_field }}
+           </div>
+           </div>
+               </div>
+<div class="row">
+    <div class="col-6">
+<div class="form-group">
+               {{ form.storage|as_crispy_field }}
+           </div>
+</div>
+    <div class="col-6">
+        <div class="form-group">
+               {{ form.dimension_width|as_crispy_field }}
+           </div>
+    </div>
+</div>
+ <div class="row">
+      <div class="col-12">
+<div class="form-group">
+               {{ form.description|as_crispy_field }}
+           </div>
+</div>
+
+ </div>
+ <div class="row">
+     <div class="col-4"></div>
+      <div class="col-4">
+<div class="form-group">
+               {{ form.total_value|as_crispy_field }}
+           </div>
+<div class="col-4"></div>
+
+</div>
+
+ </div>
+<!--==========================-->
+  <div class="row">
+   <div class="col-12" id="central">
         <table>
-            {{ cargos.management_form }}
+
+            {{ cargos.management_form|crispy }}
 
             {% for form in cargos.forms %}
                 {% if forloop.first %}
@@ -47,16 +121,16 @@
                                 {% endfor %}
                             {% endif %}
                             {{ field.errors.as_ul }}
-                            {{ field }}
+                            {{ field|as_crispy_field }}
                         </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
         </table>
-        <input type="submit" value="Zapisz"/>
+        <button  type="submit"  class="btn btn-success">Zapisz</button>
     </form>
 </div>
-
+  </div>
 {% if request.get_full_path == modify_url %}
     {% if not specification.approved %}
     <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
@@ -66,6 +140,13 @@
     </form>
     {% endif %}
 {% endif %}
+
+   </div>
+<div class="col-1"></div>
+   </div>
+  </div>
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++-->
+
 
 <script type="text/javascript">
     $('.formset_row-{{ formset.prefix }}').formset({

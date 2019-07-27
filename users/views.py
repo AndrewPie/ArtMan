@@ -44,7 +44,7 @@ class Login(View):
                     return redirect('/')
 
             else:
-                return HttpResponse('brak uzytkownika')
+                return render(request,'nouser.html')
         return HttpResponse('cos poszlo nie tak')
 
 class Logout(View):
