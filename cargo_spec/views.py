@@ -4,17 +4,22 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db import transaction
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from datetime import datetime
-
+from django.http import HttpResponse
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
 from django.urls import resolve
+from django.contrib.auth import get_user_model
 
-from .models import Specification, CargoContent, SpecificationDocument
+from .models import Specification, CargoContent, SpecificationDocument,SpecificationDocumentsExcel
 from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from .utils import specification_marking, check_scan_file
+from .utils import specification_marking, check_scan_file,AddExcelToSpec
+
+from django.templatetags.static import static
+import os
+
 
 
 class MyListView(LoginRequiredMixin, ListView):
@@ -104,7 +109,8 @@ class AcceptSpecificationView(LoginRequiredMixin, View):
         spec = get_object_or_404(Specification, pk=pk)
         spec.approved = True
         spec.save()
-        
+        AddExcelToSpec(request,spec)
+        #############
         return redirect('cargo_spec:spec-detail', spec.pk)
     
     
@@ -125,6 +131,16 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
             # return HttpResponseForbidden('Nie masz dostępu do specyfikacji innych użytkowników')
             raise PermissionDenied()
         return context
+    def post(self,request,*args, **kwargs):
+        context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
+        request.session['doc_id']=self.object.pk
+        return redirect('cargo_spec:test')
+        
+        
+
+
+
+
 
 
 class SpecificationScanUploadView(LoginRequiredMixin, View):
@@ -163,10 +179,12 @@ class SpecificationPhotoUploadView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         files = request.FILES.getlist('file_field')
+        print(files)
         if form.is_valid():
             spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
             owner = self.request.user
             for doc in files:
+                
                 SpecificationDocument.objects.create(
                     description = form.cleaned_data['description'],
                     document = doc,
@@ -184,3 +202,18 @@ class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         spk = self.kwargs['spk']
         return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})
+
+class showfiles(UserPassesTestMixin,View):
+    redirect_url='/'
+    def test_func(self):
+        isStaff=self.request.user.is_staff==True
+        print(isStaff)
+        return isStaff
+    def get(self,request):
+        list=SpecificationDocumentsExcel.objects.select_related('spec').order_by('spec__owner')
+        return render(request,'whole_list.html',{'docs':list})#
+        
+
+
+
+        
