@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 <h3>Specyfikacje ładunkowe:</h3>
+<p>Zatwierdzone<p>
 <ul>
     {% for object in object_list %}
         {% if object.approved %}
             <li><a href="{% url 'cargo_spec:spec-detail' object.id %}">{{ object.marking }}</a></li>
-        {% else %}
+        {% endif %}
+    {% endfor %}
+</ul>
+<p>Niezatwierdzone<p>
+<ul>
+    {% for object in object_list %}
+        {% if not object.approved %}
             <li><a href="{% url 'cargo_spec:modify-spec' object.id %}">{{ object.marking }}</a></li>
         {% endif %}
     {% endfor %}
