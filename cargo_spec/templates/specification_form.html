@@ -1,160 +1,165 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
-    {% load crispy_forms_tags %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
+{% load crispy_forms_tags %}
 <script src="{% static 'jquery.formset.js' %}"></script>
 <script src="{% static 'total_value.js' %}"></script>
-    <script src="{% static 'add_class.js' %}"></script>
+<script src="{% static 'add_class.js' %}"></script>
 
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
-{% comment %} Sprawdzenie czy jest to widok update. Jeśli nie, to dla create nie wyświetla tego co w poniższym if {% endcomment %}
+{% comment %} Sprawdzenie czy jest to widok update. Jeśli nie, to dla create nie wyświetla tego co w poniższym if
+{% endcomment %}
 {% if request.get_full_path == modify_url %}
-<div><h2>Specyfikacja ładunkowa: {{ specification.marking }}</h2>
-<form action="{% url 'cargo_spec:delete-spec' specification.id %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="specification_id" value="{{ specification.id }}" />
-    <button type="submit" onclick='return confirm("Czy napewno usunąć specyfikację {{ specification.marking }}?");'>Usuń całą specyfikację</button>
-</form>
-</div>
-{% endif %}
- <div class="container">
-<form action="" method="POST"> {% csrf_token %}
-    <!--==================-->
-<div class="container">
-  <div class="row">
-   <div class="col-1"></div>
-   <div class="col-10" id="central">
-
-            <div class="row">
-       <div class="col-12">
-           <div class="form-group">
-               <h1>Specyfikacja skrzyni</h1>
-           </div>
-           </div>
-               </div>
-  <div class="row">
-       <div class="col-12">
-           <div class="form-group">
-               {{ form.package_type|as_crispy_field }}
-           </div>
-           </div>
-               </div>
- <div class="row">
-       <div class="col-3">
-           <div class="form-group">
-               {{ form.dimension_length|as_crispy_field }}
-           </div>
-           </div>
-      <div class="col-3">
-           <div class="form-group">
-               {{ form.dimension_width|as_crispy_field }}
-           </div>
-           </div>
-      <div class="col-3">
-           <div class="form-group">
-               {{ form.dimension_height|as_crispy_field }}
-           </div>
-           </div>
-      <div class="col-3">
-           <div class="form-group">
-               {{ form.weight|as_crispy_field }}
-           </div>
-           </div>
-               </div>
-<div class="row">
-    <div class="col-12">
-<div class="form-group">
-               {{ form.storage|as_crispy_field }}
-           </div>
-</div>
-
-</div>
- <div class="row">
-      <div class="col-12">
-<div class="form-group">
-               {{ form.description|as_crispy_field }}
-           </div>
-</div>
-
- </div>
- <div class="row">
-     <div class="col-4"></div>
-      <div class="col-4">
-<div class="form-group">
-               {{ form.total_value|as_crispy_field }}
-           </div>
-      </div>
-<div class="col-4"></div>
-
-</div>
-
-
-<!--==========================-->
-  <div class="row">
-   <div class="col-12" id="central">
-   <form action="" method="POST">{% csrf_token %}
-        <table>
-
-            {{ cargos.management_form|crispy }}
-
-            {% for form in cargos.forms %}
-                {% if forloop.first %}
-                    <thead>
-                    <tr>
-                        {% for field in form.visible_fields %}
-                            {% if field.label != 'Delete' %}
-                                <th>{{ field.label|capfirst }}</th>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                {% endif %}
-                <tr class="{% cycle 'row1' 'row2' %} formset_row-{{ formset.prefix }}">
-                    {% for field in form.visible_fields %}
-                        <td>
-                            {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                    {{ hidden }}
-                                {% endfor %}
-                            {% endif %}
-                            {{ field.errors.as_ul }}
-                            {{ field|as_crispy_field }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-        <button  type="submit"  class="btn btn-success">Zapisz</button>
-
-</form>
-</div>
-</div>
-
-{% if request.get_full_path == modify_url %}
-    {% if not specification.approved %}
-    <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
+<div>
+    <h2>Specyfikacja ładunkowa: {{ specification.marking }}</h2>
+    <form action="{% url 'cargo_spec:delete-spec' specification.id %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="specification_id" value="{{ specification.id }}" />
-        <button type="submit" onclick='return confirm("Czy napewno zatwierdzasz specyfikację {{ specification.marking }}?");'>Zatwierdź specyfikację</button>
+        <button type="submit"
+            onclick='return confirm("Czy napewno usunąć specyfikację {{ specification.marking }}?");'>Usuń całą
+            specyfikację</button>
     </form>
-    {% endif %}
+</div>
 {% endif %}
+<div class="container">
+    <form action="" method="POST"> {% csrf_token %}
+        <!--==================-->
+        <div class="container">
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-10" id="central">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <h1>Specyfikacja skrzyni</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.package_type|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                {{ form.dimension_length|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                {{ form.dimension_width|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                {{ form.dimension_height|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                {{ form.weight|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.storage|as_crispy_field }}
+                            </div>
+                        </div>
+                        < </div> <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                            </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                {{ form.total_value|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-4"></div>
+
+                    </div>
 
 
-<div class="col-1"></div>
+                    <!--==========================-->
+                    <div class="row">
+                        <div class="col-12" id="central">
+                            <form action="" method="POST">{% csrf_token %}
+                                <table>
+
+                                    {{ cargos.management_form|crispy }}
+
+                                    {% for form in cargos.forms %}
+                                    {% if forloop.first %}
+                                    <thead>
+                                        <tr>
+                                            {% for field in form.visible_fields %}
+                                            {% if field.label != 'Delete' %}
+                                            <th>{{ field.label|capfirst }}</th>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    {% endif %}
+                                    <tr class="{% cycle 'row1' 'row2' %} formset_row-{{ formset.prefix }}">
+                                        {% for field in form.visible_fields %}
+                                        <td>
+                                            {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}
+                                            {{ hidden }}
+                                            {% endfor %}
+                                            {% endif %}
+                                            {{ field.errors.as_ul }}
+                                            {{ field|as_crispy_field }}
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                                <button type="submit" class="btn btn-success">Zapisz</button>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if request.get_full_path == modify_url %}
+                    {% if not specification.approved %}
+                    <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="specification_id" value="{{ specification.id }}" />
+                        <button type="submit"
+                            onclick='return confirm("Czy napewno zatwierdzasz specyfikację {{ specification.marking }}?");'>Zatwierdź
+                            specyfikację</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
 
 
-<script type="text/javascript">
-    $('.formset_row-{{ formset.prefix }}').formset({
-        addText: 'Dodaj kolejny',
-        deleteText: 'usuń',
-        prefix: 'cargos_content',
-        added: $('input[name^="cargos_content"][name$="value"]').addClass("value"),
-    });
+                    <div class="col-1"></div>
 
-function myFunction() {
-  var element = document.getElementById("myDIV");
-  element.classList.add("mystyle");
-}
-</script></div>{% endblock %}
+
+                    <script type="text/javascript">
+                        $('.formset_row-{{ formset.prefix }}').formset({
+                            addText: 'Dodaj kolejny',
+                            deleteText: 'usuń',
+                            prefix: 'cargos_content',
+                            added: $('input[name^="cargos_content"][name$="value"]').addClass("value"),
+                        });
+
+                        function myFunction() {
+                            var element = document.getElementById("myDIV");
+                            element.classList.add("mystyle");
+                        }
+                    </script>
+                </div>{% endblock %}
