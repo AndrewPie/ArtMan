@@ -15,11 +15,14 @@ body {
 }
 </style>
 
+{% url 'cargo_spec:add-spec' as add_url %}
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
-{% comment %} Sprawdzenie czy jest to widok update. Jeśli nie, to dla create nie wyświetla tego co w poniższym if {% endcomment %}
-{% if request.get_full_path == modify_url %}
+
 <div class='container'>
 <div class='card'>
+{% if request.get_full_path == add_url %}
+<div class='card-header'><center><h3>Dodaj specyfikację:{{ specification.marking }}</h3></center></div>
+{% else %}
 <div class='card-header'><center><h3>Specyfikacja ładunkowa:{{ specification.marking }}</h3></center>
 <form action="{% url 'cargo_spec:delete-spec' specification.id %}" method="POST">
     {% csrf_token %}
@@ -29,13 +32,42 @@ body {
     </center>
 </form>
 </div>
-</div>
-</div>
 {% endif %}
+</div>
+</div>
 
 <div class="container">
     <form action="" method="POST">{% csrf_token %}
-        {{ form|crispy }}
+        {% comment %} {{ form|crispy }} {% endcomment %}
+        <div class='form-row'>
+            <div class='form-group col mb-0'>
+            {{ form.package_type|as_crispy_field }}
+            </div>
+            <div class='form-group col mb-0'>
+            {{ form.storage|as_crispy_field }}
+            </div>
+        </div>
+        <div class='form-row'>
+            <div class='form-group col mb-0'>
+            {{ form.dimension_length|as_crispy_field }}
+            </div>
+            <div class='form-group col mb-0'>
+            {{ form.dimension_width|as_crispy_field }}
+            </div>
+            <div class='form-group col mb-0'>
+            {{ form.dimension_height|as_crispy_field }}
+            </div>
+            <div class='form-group col mb-0'>
+            {{ form.weight|as_crispy_field }}
+            </div>
+        </div>
+        {{ form.description|as_crispy_field }}
+        <div class='form-row'>
+            <div class='form-group col-3 mb-0 mx-auto'>
+            {{ form.total_value|as_crispy_field }}
+            </div>
+        </div>
+        <hr />
         <table>
             {{ cargos.management_form|crispy }}
 

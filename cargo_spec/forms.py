@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .models import Specification, CargoContent, SpecificationDocument
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column
 
 class SpecificationForm(forms.ModelForm):
     class Meta:
@@ -15,11 +16,11 @@ class SpecificationForm(forms.ModelForm):
         }
         labels = {
             'package_type': 'Rodzaj opakowania',
+            'storage': 'Warunki przechowywania',
             'dimension_length': 'Długość [cm]',
             'dimension_width': 'Szerokość [cm]',
             'dimension_height': 'Wysokość [cm]',
             'weight': 'Waga [kg]',
-            'storage': 'Warunki przechowywania',
             'description': 'Opis',
             'total_value': 'Łączna wartość (PLN)'
         }
@@ -52,7 +53,8 @@ class CargoContentForm(forms.ModelForm):
         
         # usuwa label tylko z konkretnego pola
         # self.fields['name'].label = False
-
+        
+        
 CargoContentFormSet = inlineformset_factory(Specification, CargoContent, form=CargoContentForm, extra=0, min_num=1, validate_min=True, max_num=20, validate_max=True, can_delete=True)
 
 
