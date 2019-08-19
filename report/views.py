@@ -57,6 +57,15 @@ class AddSectionView(CreateView):
         month_ = datetime.now().month
         data['report'] = get_object_or_404(Report, year=year_, month=month_)
         return data
+
+    def get_form(self, *args, **kwargs):
+        form = super(AddSectionView, self).get_form(*args, **kwargs)
+        # FIXME: musi być lepszy sposób na pobranie raportu, z get_context_data nie działa
+        year_ = datetime.now().year
+        month_ = datetime.now().month
+        report = get_object_or_404(Report, year=year_, month=month_)
+        form.fields['section_master'].queryset = report.main_sections()
+        return form
         
     def form_valid(self, form):
         context = self.get_context_data()
