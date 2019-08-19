@@ -11,7 +11,7 @@
     display: none;
 }
 body {
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%);
 }
 </style>
 
@@ -19,6 +19,7 @@ body {
 {% url 'cargo_spec:modify-spec' specification.id as modify_url %}
 
 <div class='container'>
+<div class="mx-auto col-10">
 <div class='card'>
 {% if request.get_full_path == add_url %}
 <div class='card-header'><center><h3>Dodaj specyfikację:{{ specification.marking }}</h3></center></div>
@@ -35,8 +36,10 @@ body {
 {% endif %}
 </div>
 </div>
+</div>
 
 <div class="container">
+    <div class="mx-auto col-10">
     <form action="" method="POST">{% csrf_token %}
         {% comment %} {{ form|crispy }} {% endcomment %}
         <div class='form-row'>
@@ -105,7 +108,7 @@ body {
 {% if request.get_full_path == modify_url %}
     {% if not specification.approved %}
     <div class='container'>
-    <div class='card'>
+    <div class="mx-auto col-4">
     <div class='card-footer'>
     <form action="{% url 'cargo_spec:accept-spec' specification.id %}" method="POST">
         {% csrf_token %}
