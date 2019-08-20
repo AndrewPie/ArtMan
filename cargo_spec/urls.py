@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import MyListView, AddSpecificationView, ModifySpecificationView, DeleteSpecificationView, AcceptSpecificationView, SpecificationDetailView, SpecificationScanUploadView, SpecificationPhotoUploadView, DeleteSpecificationDocumentView
+from cargo_spec.views import MyListView, AddSpecificationView, ModifySpecificationView, DeleteSpecificationView, AcceptSpecificationView, SpecificationDetailView, SpecificationScanUploadView, SpecificationPhotoUploadView, DeleteSpecificationDocumentView
 
 app_name = 'cargo_spec'
 urlpatterns = [

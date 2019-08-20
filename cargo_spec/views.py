@@ -12,14 +12,14 @@ from django.core.exceptions import PermissionDenied
 
 from django.urls import resolve
 
-from .models import Specification, CargoContent, SpecificationDocument
-from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from .utils import specification_marking, check_scan_file
+from cargo_spec.models import Specification, CargoContent, SpecificationDocument
+from cargo_spec.forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
+from cargo_spec.utils import specification_marking, check_scan_file
 
 
 class MyListView(LoginRequiredMixin, ListView):
     model = Specification
-    template_name = 'my_lists.html'
+    template_name = 'cargo_spec/my_lists.html'
     ordering = ['-marking']
     
     def get_queryset(self):
@@ -30,7 +30,7 @@ class MyListView(LoginRequiredMixin, ListView):
 
 class AddSpecificationView(LoginRequiredMixin, CreateView):
     model = Specification
-    template_name = 'specification_form.html'
+    template_name = 'cargo_spec/specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -65,7 +65,7 @@ class AddSpecificationView(LoginRequiredMixin, CreateView):
     
 class ModifySpecificationView(LoginRequiredMixin, UpdateView):
     model = Specification
-    template_name = 'specification_form.html'
+    template_name = 'cargo_spec/specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -117,7 +117,7 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     
 class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
-    template_name = 'specification_detail.html'
+    template_name = 'cargo_spec/specification_detail.html'
     
     def get(self, request, *args, **kwargs):
         context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
@@ -128,7 +128,7 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
 
 
 class SpecificationScanUploadView(LoginRequiredMixin, View):
-    template_name = 'file_upload.html'
+    template_name = 'cargo_spec/file_upload.html'
     form_class = SingleSpecificationDocumentForm
 
     def get(self, request, *args, **kwargs):
@@ -153,7 +153,7 @@ class SpecificationScanUploadView(LoginRequiredMixin, View):
             
             
 class SpecificationPhotoUploadView(LoginRequiredMixin, View):
-    template_name = 'file_upload.html'
+    template_name = 'cargo_spec/file_upload.html'
     form_class = MultipleSpecificationDocumentForm
 
     def get(self, request, *args, **kwargs):

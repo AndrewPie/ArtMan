@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from django.conf import settings
 
-from .models import Specification
+from cargo_spec.models import Specification
 
 def specification_marking(self):
     mark = f'{datetime.now().year}-{self.instance.owner.first_name[0]}{self.instance.owner.last_name[0]}-{self.instance.package_type[:2].upper()}'
