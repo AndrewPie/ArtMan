@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.contenttypes.models import ContentType
+
+
 class SignupForm(UserCreationForm):
     class Meta:
         model = get_user_model()
@@ -16,19 +18,20 @@ class SignupForm(UserCreationForm):
             user.save()
             self.add_premissions(user)
             return user
+
     @staticmethod
     def add_premissions(user):
         print(type(user.user_type))
         content_type = ContentType.objects.get_for_model(get_user_model())
-        MEDICAL=[ "Can add medical report",
-                  "Can del medical report",
-                  "Can change medical report",]
-        TECHNICAL=[ "Can add technical report",
-                  "Can del technical report",
-                  "Can change technical report",]
-        SUPPLY=[ "Can add supply report",
-                  "Can del supply report",
-                  "Can change supply report",]
+        MEDICAL=['Can add medical report',
+                 'Can del medical report',
+                 'Can change medical report']
+        TECHNICAL=['Can add technical report',
+                   'Can del technical report',
+                   'Can change technical report']
+        SUPPLY=['Can add supply report',
+                'Can del supply report',
+                'Can change supply report']
         group=[MEDICAL,TECHNICAL,SUPPLY]
         
         for i in group[user.user_type]:
