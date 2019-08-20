@@ -32,7 +32,11 @@
                 </li>
             </ul>
             <span class="navbar-text">
+            {% if appname == 'cargo_spec'%}
                 Specyfikacje ładunkowe
+            {% else %}
+                Raporty
+            {% endif %}
             </span>
         </div>
     </nav>
