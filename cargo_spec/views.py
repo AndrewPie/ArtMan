@@ -16,6 +16,8 @@ from cargo_spec.models import Specification, CargoContent, SpecificationDocument
 from cargo_spec.forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
 from cargo_spec.utils import specification_marking, check_scan_file
 
+from cargo_spec.tables import CargoContentTable
+
 
 class MyListView(LoginRequiredMixin, ListView):
     model = Specification
@@ -118,14 +120,22 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
 class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
     template_name = 'cargo_spec/specification_detail.html'
+    # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
+    context_object_name = 'specification'
     
     def get(self, request, *args, **kwargs):
         context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
         if (self.object.owner != self.request.user) or (self.object.approved is False):
-            # return HttpResponseForbidden('Nie masz dostępu do specyfikacji innych użytkowników')
             raise PermissionDenied()
         return context
-
+    
+    def get_context_data(self, **kwargs):
+        context = super(SpecificationDetailView , self).get_context_data(**kwargs)
+        specification_ = get_object_or_404(Specification, pk=self.kwargs['pk'])
+        table = CargoContentTable(CargoContent.objects.filter(specification=specification_))
+        context['table'] = table
+        return context
+    
 
 class SpecificationScanUploadView(LoginRequiredMixin, View):
     template_name = 'cargo_spec/file_upload.html'

@@ -40,11 +40,11 @@ class Specification(models.Model):
 
 
 class CargoContent(models.Model):
-    name = models.CharField(max_length=128)
-    serial_number = models.CharField(max_length=64, blank=True)
-    quantity = models.DecimalField(max_digits=7, decimal_places=1)
-    unit_of_measurement = models.CharField(max_length=24)
-    value = models.DecimalField(max_digits=7, decimal_places=2)
+    name = models.CharField(max_length=128, verbose_name='Nazwa')
+    serial_number = models.CharField(max_length=64, blank=True, verbose_name='Nr seryjny**')
+    quantity = models.DecimalField(max_digits=7, decimal_places=1, verbose_name='Ilość')
+    unit_of_measurement = models.CharField(max_length=24, verbose_name='Jedn. miary')
+    value = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Wartość (PLN)')
     specification = models.ForeignKey(Specification, on_delete=models.CASCADE, related_name='cargos_content')
     
     def __str__(self):

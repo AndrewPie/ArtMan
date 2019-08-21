@@ -35,13 +35,6 @@ class CargoContentForm(forms.ModelForm):
     class Meta:
         model = CargoContent
         exclude = ['specification']
-        labels = {
-            'name': 'nazwa',
-            'serial_number': 'nr seryjny**',
-            'quantity': 'ilość',
-            'unit_of_measurement': 'jedn. miary',
-            'value': 'wartość (PLN)'
-        }
         
     def __init__(self, *args, **kwargs):
         super(CargoContentForm, self).__init__(*args, **kwargs)
