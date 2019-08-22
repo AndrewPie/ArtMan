@@ -10,6 +10,9 @@ img {
     width: 100px;
     height: auto;
 }
+.icon {
+    font-size: 100px;
+}
 </style>
 
 
@@ -56,7 +59,11 @@ img {
     {% for doc in specification.specificationdocument_set.all|sort_docs %}
         {% if '/scan' in doc.only_file_path %}
         <li class="media">
-        <img src="{{ doc.document.url}}" class="align-self-center mr-3">
+            {% if doc.pdf_extension %}
+            <div class='icon'><i class="far fa-file-pdf align-self-center fa-fw"></i></div>
+            {% else %}
+            <img src="{{ doc.document.url}}" class="align-self-center mr-3">
+            {% endif %}
         <div class="media-body">
         <p class="mt-3">Skan: <a href="{{ doc.document.url}}">{{ doc.filename }}</a>
             <form action="{% url 'cargo_spec:delete-doc' specification.id doc.id %}" method="POST">
@@ -87,7 +94,7 @@ img {
         {% endif %}
     {% endfor %}
 </ul>
-</div>
+</p>
 </div>
 {% endif %}
 
