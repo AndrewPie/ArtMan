@@ -44,6 +44,9 @@ img {
     <div class="mx-auto col-10">
 {% render_table table %}
 </div>
+    <div class="mx-auto col-10">
+<div class="text-right mb-5"><strong>Łączna wartość: {{ specification.total_value }}</strong></div>
+</div>
 </div>
 
 {% if specification.specificationdocument_set.all %}
