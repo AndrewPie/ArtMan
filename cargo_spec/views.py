@@ -4,38 +4,41 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db import transaction
-from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
-from django.http import HttpResponse
+
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
 from django.urls import resolve
-from django.contrib.auth import get_user_model
 
-from .models import Specification, CargoContent, SpecificationDocument,SpecificationDocumentsExcel
-from .forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from .utils import specification_marking, check_scan_file,AddExcelToSpec
+from cargo_spec.models import Specification, CargoContent, SpecificationDocument
+from cargo_spec.forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
+from cargo_spec.utils import specification_marking, check_scan_file
 
-from django.templatetags.static import static
-import os
-
+from cargo_spec.tables import CargoContentTable
 
 
 class MyListView(LoginRequiredMixin, ListView):
     model = Specification
-    template_name = 'my_lists.html'
+    template_name = 'cargo_spec/my_lists.html'
     ordering = ['-marking']
     
     def get_queryset(self):
         queryset = super().get_queryset()
         owner_ = self.request.user
         return queryset.filter(owner = owner_)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['a_list'] = [s.approved for s in queryset]
+        return context
 
 
 class AddSpecificationView(LoginRequiredMixin, CreateView):
     model = Specification
-    template_name = 'specification_form.html'
+    template_name = 'cargo_spec/specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -70,7 +73,7 @@ class AddSpecificationView(LoginRequiredMixin, CreateView):
     
 class ModifySpecificationView(LoginRequiredMixin, UpdateView):
     model = Specification
-    template_name = 'specification_form.html'
+    template_name = 'cargo_spec/specification_form.html'
     form_class = SpecificationForm
     
     def get_context_data(self, **kwargs):
@@ -89,6 +92,8 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         cargos = context['cargos']
         with transaction.atomic():
+            if 'accept_spec' in self.request.POST:
+                form.instance.approved = True
             self.object = form.save()
             
             # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
@@ -101,19 +106,13 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
         return super(ModifySpecificationView, self).form_valid(form)
         
     def get_success_url(self):
-        return reverse_lazy('cargo_spec:my-lists')
+        if self.object.approved is False:
+            return reverse_lazy('cargo_spec:my-lists')
+        else:
+            # FIXME: zrobić przekierowanie do cargo_spec:spec-detail
+            return reverse_lazy('cargo_spec:my-lists')
     
 
-class AcceptSpecificationView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        spec = get_object_or_404(Specification, pk=pk)
-        spec.approved = True
-        spec.save()
-        AddExcelToSpec(request,spec)
-        #############
-        return redirect('cargo_spec:spec-detail', spec.pk)
-    
-    
 class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     model = Specification
     
@@ -123,28 +122,26 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     
 class SpecificationDetailView(LoginRequiredMixin, DetailView):
     model = Specification
-    template_name = 'specification_detail.html'
+    template_name = 'cargo_spec/specification_detail.html'
+    # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
+    context_object_name = 'specification'
     
     def get(self, request, *args, **kwargs):
         context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
         if (self.object.owner != self.request.user) or (self.object.approved is False):
-            # return HttpResponseForbidden('Nie masz dostępu do specyfikacji innych użytkowników')
             raise PermissionDenied()
         return context
-    def post(self,request,*args, **kwargs):
-        context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
-        request.session['doc_id']=self.object.pk
-        return redirect('cargo_spec:test')
-        
-        
-
-
-
-
-
+    
+    def get_context_data(self, **kwargs):
+        context = super(SpecificationDetailView , self).get_context_data(**kwargs)
+        specification_ = get_object_or_404(Specification, pk=self.kwargs['pk'])
+        table = CargoContentTable(CargoContent.objects.filter(specification=specification_))
+        context['table'] = table
+        return context
+    
 
 class SpecificationScanUploadView(LoginRequiredMixin, View):
-    template_name = 'file_upload.html'
+    template_name = 'cargo_spec/file_upload.html'
     form_class = SingleSpecificationDocumentForm
 
     def get(self, request, *args, **kwargs):
@@ -169,7 +166,7 @@ class SpecificationScanUploadView(LoginRequiredMixin, View):
             
             
 class SpecificationPhotoUploadView(LoginRequiredMixin, View):
-    template_name = 'file_upload.html'
+    template_name = 'cargo_spec/file_upload.html'
     form_class = MultipleSpecificationDocumentForm
 
     def get(self, request, *args, **kwargs):
@@ -179,12 +176,10 @@ class SpecificationPhotoUploadView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         files = request.FILES.getlist('file_field')
-        print(files)
         if form.is_valid():
             spec = get_object_or_404(Specification, pk=self.kwargs['pk'])
             owner = self.request.user
             for doc in files:
-                
                 SpecificationDocument.objects.create(
                     description = form.cleaned_data['description'],
                     document = doc,
@@ -202,18 +197,3 @@ class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         spk = self.kwargs['spk']
         return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})
-
-class showfiles(UserPassesTestMixin,View):
-    redirect_url='/'
-    def test_func(self):
-        isStaff=self.request.user.is_staff==True
-        print(isStaff)
-        return isStaff
-    def get(self,request):
-        list=SpecificationDocumentsExcel.objects.select_related('spec').order_by('spec__owner')
-        return render(request,'whole_list.html',{'docs':list})#
-        
-
-
-
-        

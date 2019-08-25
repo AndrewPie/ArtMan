@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class=''>
+    {% if section.section_master %}
+        <h1>{{ section.section_master.title }} - {{ section.title }}</h1>
+    {% else %}
+        <h1>{{ section.title }}</h1>
+    {% endif %}
+</div>
+<div class=''>
+    <ol>
+        {% for subsection in section.subsections.all %}
+            <li>{% include 'report/sections.html' with section=subsection %}</li>
+        {% endfor %}
+    </ol>
+</div>
+<div class=''>
+    {{ section.text_entry }}
+</div>
+{% if note_list %}
+    <div class=''>
+        <h2>Wpisy:</h2>
+        <ul>
+            {% for note in note_list %}
+                <li>{{ note.title }}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+<div class=''>
+    {{ section.text_end }}
+</div>
+<div class=''>
+<button id='add-note'>Dodaj wpis</button>
+</div>
+<div class='new-note' hidden='true'>
+    <form action="{% url 'report:note-list' section.id %}" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Dodaj wpis</button>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#add-note").click(function(){
+            $("#add-note").attr('hidden', 'true')
+            $(".new-note").toggle().removeAttr('hidden');
+        });
+    });
+</script>
+{% endblock %}

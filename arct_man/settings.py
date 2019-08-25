@@ -34,13 +34,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'cargo_spec',
     'report',
     'users',
     'django_cleanup',
     'crispy_forms',
+    'django_tables2',
 ]
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,7 +61,7 @@ ROOT_URLCONF = 'arct_man.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'arct_man.contexts.appname',
             ],
         },
     },
@@ -108,14 +113,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 
-]
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "staticfiles"),]
+STATICFILES_DIRS = ['static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -123,7 +123,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL='users.User'
 
 LOGIN_URL = 'users:login'
-# LOGIN_REDIRECT_URL = 'users:test'
+LOGIN_REDIRECT_URL = 'users:test'
 try:
     from arct_man.local_settings import DATABASES
 except ModuleNotFoundError:

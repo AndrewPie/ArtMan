@@ -202,9 +202,6 @@
                 // Check if we're above the minimum allowed number of forms -> show all delete link(s)
                 if (showDeleteLinks()){
                     $('a.' + delCssSelector).each(function(){$(this).show();});
-
-                    // Dodane by nie wyświetlało linku usuń przy pierwszej linii
-                    $("#id_cargos_content-0-DELETE").next().hide();
                 }
                 // Check if we've exceeded the maximum allowed number of forms:
                 if (!showAddButton()) buttonRow.hide();
