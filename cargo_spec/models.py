@@ -74,3 +74,9 @@ class SpecificationDocument(models.Model):
     @property
     def only_file_path(self):
         return os.path.dirname(self.document.name)
+
+    @property
+    def pdf_extension(self):
+        document = self.document.name
+        if document.endswith('.pdf'):
+            return True
