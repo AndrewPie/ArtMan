@@ -3,7 +3,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 <script src="{% static 'js/jquery.formset.js' %}"></script>
-<script src="{% static 'js/total_value.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
 
 {% comment %} .asteriskField usuwa "*" przy obowiązkowych polach formularza, właściwość crispy-forms{% endcomment %}
 <style>
@@ -115,10 +115,12 @@
     </div>
     {% if request.get_full_path == modify_url %}
     <div class='container'>
-        <div class="mx-auto col-4">
+        <div class="mx-auto col-10">
             <div class='card-footer'>
-                <input id="accept_spec" type="submit" name="accept_spec" class="btn btn-success"
+                <center>
+                    <input id="accept_spec" type="submit" name="accept_spec" class="btn btn-success"
                     value="Zatwierdź specyfikację" />
+                </center>
             </div>
         </div>
     </div>
