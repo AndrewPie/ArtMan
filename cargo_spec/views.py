@@ -86,6 +86,8 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         cargos = context['cargos']
         with transaction.atomic():
+            if 'accept_spec' in self.request.POST:
+                form.instance.approved = True
             self.object = form.save()
             
             # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
@@ -98,18 +100,13 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
         return super(ModifySpecificationView, self).form_valid(form)
         
     def get_success_url(self):
-        return reverse_lazy('cargo_spec:my-lists')
+        if self.object.approved is False:
+            return reverse_lazy('cargo_spec:my-lists')
+        else:
+            # FIXME: zrobić przekierowanie do cargo_spec:spec-detail
+            return reverse_lazy('cargo_spec:my-lists')
     
 
-class AcceptSpecificationView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        spec = get_object_or_404(Specification, pk=pk)
-        spec.approved = True
-        spec.save()
-        
-        return redirect('cargo_spec:spec-detail', spec.pk)
-    
-    
 class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
     model = Specification
     
