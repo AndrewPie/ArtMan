@@ -28,6 +28,12 @@ class MyListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         owner_ = self.request.user
         return queryset.filter(owner = owner_)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['a_list'] = [s.approved for s in queryset]
+        return context
 
 
 class AddSpecificationView(LoginRequiredMixin, CreateView):
