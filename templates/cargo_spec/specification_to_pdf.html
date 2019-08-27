@@ -1,0 +1,126 @@
+{% load render_table from django_tables2 %}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+
+    {% comment %} border-collapse: collapse; {% endcomment %}
+<style>
+
+body {
+    font-family: "Helvetica Neue", Arial, Verdana, Helvetica, sans-serif;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 0 5px 0 5px;
+}
+.no-border {
+    border: none;
+}
+
+@page {
+    @bottom-right{
+        content: "Strona " counter(page) " z " counter(pages);
+    }
+}
+</style>
+
+
+
+<div class="container">
+<div class="mx-auto col-10">
+<div class="card">
+<div class="card-header"><center><h3>Specyfikacja ładunkowa: {{ specification.marking }}</h3></center></div>
+</div>
+</div>
+</div>
+
+<div class="container">
+    <div class="mx-auto col-10">
+        <dl class="row col-9 mx-auto mt-4">
+            <dt class="col-6 mb-3">Rodzaj opakowania</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.package_type }}</dt>
+            <dt class="col-6 mb-3">Wymiary w cm [dł/szer/wys]</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.dimension_length }}x{{ specification.dimension_width }}x{{ specification.dimension_height }}</dt>
+            <dt class="col-6 mb-3">Waga w kg</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.weight }}</dt>
+            <dt class="col-6 mb-4">Warunki przechowywania</dt>
+            <dd class="col-6 text-right mb-4">{{ specification.storage }}</dt>
+        </dl>
+<hr />
+</div>
+</div>
+
+<div class="container">
+    <div class="mx-auto ">
+    <center><p class="h4"><strong>Spis zawartości</strong></p></center>
+    <table>
+        <thead>
+            <tr>
+                <th class="text-center">lp.</th>
+                <th class="text-center">Nazwa (i nr seryjny sprzętu wartościowego podlegającego ubezpieczeniu**)</th>
+                <th class="text-center">Ilość</th>
+                <th class="text-center">Jedn. miary</th>
+                <th class="text-center">Wartość (PLN)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% with specification.cargos_content.all|length as len %}
+            {% for content in specification.cargos_content.all %}
+            <tr>
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td>{{ content.name }} 
+                {% if content.serial_number %}
+                    (numer seryjny - {{ content.serial_number }})</td>
+                {% endif %}
+                <td class="text-right">{{ content.quantity }}</td>
+                <td class="text-center">{{ content.unit_of_measurement }}</td>
+                <td class="text-right">{{ content.value }}</td>
+            </tr>
+            {% endfor %}
+
+            {% for i in empty_row_len %}
+            <tr>
+                <td class="text-center">{{ forloop.counter|add:len }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        {% endwith %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="no-border"></td>
+                <td class="no-border"></td>
+                <td class="no-border"></td>
+                <th class="text-center"><strong>Łączna wartość:</strong></th>
+                <td class="text-right"><b>{{ specification.total_value }}</b></th>
+            </tr>
+    </table>
+    </div>
+</div>
+
+<div class="container">
+    <div class="mx-auto ">
+
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from cargo_spec.views import MyListView, AddSpecificationView, ModifySpecificationView, DeleteSpecificationView, SpecificationDetailView, SpecificationScanUploadView, SpecificationPhotoUploadView, DeleteSpecificationDocumentView
+from cargo_spec.views import MyListView, AddSpecificationView, ModifySpecificationView, DeleteSpecificationView, SpecificationDetailView, SpecificationScanUploadView, SpecificationPhotoUploadView, DeleteSpecificationDocumentView, SpecificationPDF
 
 app_name = 'cargo_spec'
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('specification/<int:pk>/upload_scan', SpecificationScanUploadView.as_view(), name='scan-upload'),
     path('specification/<int:pk>/upload_photo', SpecificationPhotoUploadView.as_view(), name='photo-upload'),
     path('specification/<int:spk>/doc/<int:pk>/delete', DeleteSpecificationDocumentView.as_view(), name='delete-doc'),
+    path('specification/<int:pk>/pdf', SpecificationPDF.as_view(), name='spec-pdf'),
 ]

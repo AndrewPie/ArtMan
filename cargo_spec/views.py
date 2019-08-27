@@ -18,6 +18,8 @@ from cargo_spec.utils import specification_marking, check_scan_file
 
 from cargo_spec.tables import CargoContentTable
 
+from django_weasyprint import WeasyTemplateResponseMixin
+
 
 class MyListView(LoginRequiredMixin, ListView):
     model = Specification
@@ -197,3 +199,25 @@ class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         spk = self.kwargs['spk']
         return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})
+
+
+class SpecificationPDF(LoginRequiredMixin, WeasyTemplateResponseMixin, DetailView):
+    model = Specification
+    template_name = 'cargo_spec/specification_to_pdf.html'
+    # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
+    context_object_name = 'specification'
+    pdf_attachment = False
+    pdf_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"]
+    
+    def get(self, request, *args, **kwargs):
+        context = super(SpecificationPDF, self).get(request, *args, **kwargs)
+        if (self.object.owner != self.request.user) or (self.object.approved is False):
+            raise PermissionDenied()
+        return context
+    
+    def get_context_data(self, **kwargs):
+        context = super(SpecificationPDF , self).get_context_data(**kwargs)
+        specification_ = get_object_or_404(Specification, pk=self.kwargs['pk'])
+        empty_row_len = range(20 - specification_.cargos_content.all().count())
+        context['empty_row_len'] = empty_row_len
+        return context
