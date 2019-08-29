@@ -154,5 +154,9 @@ tempCodeRunnerFile.py
 # Ignore all local history of files
 .history
 
+### Other ###
+.idea/
+.idea/*
+
 # End of https://www.gitignore.io/api/python,django,visualstudiocode
 
