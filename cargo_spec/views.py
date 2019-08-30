@@ -66,14 +66,14 @@ class AddSpecificationView(LoginRequiredMixin, CreateView):
             self.object = form.save()
 
             # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
-            if cargos.is_valid() == False:
+            if cargos.is_valid():
+                cargos.instance = self.object
+                cargos.save()
+            else:
                 return self.render_to_response(
                     self.get_context_data(form=form, cargos=cargos)
                 )
 
-            if cargos.is_valid():
-                cargos.instance = self.object
-                cargos.save()
         return super(AddSpecificationView, self).form_valid(form)
 
     def get_success_url(self):
@@ -103,19 +103,20 @@ class ModifySpecificationView(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         cargos = context["cargos"]
         with transaction.atomic():
+            
             if "accept_spec" in self.request.POST:
                 form.instance.approved = True
-            self.object = form.save()
 
-            # Sprawdza czy wszystkie wymagane pola dla modelu CargoContent są wypełnione, jeśli nie, to zwraca formularz
-            if cargos.is_valid() == False:
-                return self.render_to_response(
-                    self.get_context_data(form=form, cargos=cargos)
-                )
+            self.object = form.save()
 
             if cargos.is_valid():
                 cargos.instance = self.object
                 cargos.save()
+            else:
+                return self.render_to_response(
+                    self.get_context_data(form=form, cargos=cargos)
+                )
+
         return super(ModifySpecificationView, self).form_valid(form)
 
     def get_success_url(self):
