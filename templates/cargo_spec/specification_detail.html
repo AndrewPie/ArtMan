@@ -20,6 +20,9 @@ img {
 <div class="mx-auto col-10">
 <div class="card">
 <div class="card-header"><center><h3>Specyfikacja ładunkowa: {{ specification.marking }}</h3></center></div>
+<div class="row justify-content-center">
+<a href="{% url 'cargo_spec:spec-pdf' specification.id %}" class="btn btn-success">Pobierz PDF</a>
+</div>
 </div>
 </div>
 </div>
@@ -102,7 +105,7 @@ img {
 {% endif %}
 
 <div class="container">
-    <div class="mx-auto col-10">
+    <div class="mx-auto col-10 mb-5">
 <div class="row">
 {% if not specification.marking|check_scan_file %}
 <div class="col-6 mx-auto">

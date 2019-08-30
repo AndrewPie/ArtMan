@@ -1,24 +1,27 @@
-from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
-from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.urls import reverse_lazy
-from django.db import transaction
-from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
+from fileinput import filename
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 # from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
-
-from django.urls import resolve
-
-from cargo_spec.models import Specification, CargoContent, SpecificationDocument
-from cargo_spec.forms import SpecificationForm, CargoContentForm, CargoContentFormSet, SingleSpecificationDocumentForm, MultipleSpecificationDocumentForm
-from cargo_spec.utils import specification_marking, check_scan_file
-
-from cargo_spec.tables import CargoContentTable
-
+from django.db import transaction
+from django.shortcuts import (HttpResponseRedirect, get_object_or_404,
+                              redirect, render)
+from django.urls import resolve, reverse_lazy
+from django.views import View
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
 from django_weasyprint import WeasyTemplateResponseMixin
+
+from cargo_spec.forms import (CargoContentForm, CargoContentFormSet,
+                              MultipleSpecificationDocumentForm,
+                              SingleSpecificationDocumentForm,
+                              SpecificationForm)
+from cargo_spec.models import (CargoContent, Specification,
+                               SpecificationDocument)
+from cargo_spec.tables import CargoContentTable
+from cargo_spec.utils import check_scan_file, specification_marking
 
 
 class MyListView(LoginRequiredMixin, ListView):
@@ -129,10 +132,10 @@ class SpecificationDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'specification'
     
     def get(self, request, *args, **kwargs):
-        context = super(SpecificationDetailView, self).get(request, *args, **kwargs)
+        data = super(SpecificationDetailView, self).get(request, *args, **kwargs)
         if (self.object.owner != self.request.user) or (self.object.approved is False):
             raise PermissionDenied()
-        return context
+        return data
     
     def get_context_data(self, **kwargs):
         context = super(SpecificationDetailView , self).get_context_data(**kwargs)
@@ -201,23 +204,27 @@ class DeleteSpecificationDocumentView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('cargo_spec:spec-detail', kwargs={'pk': spk})
 
 
-class SpecificationPDF(LoginRequiredMixin, WeasyTemplateResponseMixin, DetailView):
+class SpecificationPDFView(LoginRequiredMixin, WeasyTemplateResponseMixin, DetailView):
     model = Specification
     template_name = 'cargo_spec/specification_to_pdf.html'
-    # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
     context_object_name = 'specification'
-    pdf_attachment = False
+    # pdf_attachment = False
     pdf_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"]
     
     def get(self, request, *args, **kwargs):
-        context = super(SpecificationPDF, self).get(request, *args, **kwargs)
+        context = super(SpecificationPDFView, self).get(request, *args, **kwargs)
         if (self.object.owner != self.request.user) or (self.object.approved is False):
             raise PermissionDenied()
         return context
     
     def get_context_data(self, **kwargs):
-        context = super(SpecificationPDF , self).get_context_data(**kwargs)
+        context = super(SpecificationPDFView , self).get_context_data(**kwargs)
         specification_ = get_object_or_404(Specification, pk=self.kwargs['pk'])
         empty_row_len = range(20 - specification_.cargos_content.all().count())
         context['empty_row_len'] = empty_row_len
         return context
+    
+    def get_pdf_filename(self):
+        specification_ = get_object_or_404(Specification, pk=self.kwargs['pk'])
+        pdf_filename = f'{specification_.marking}.pdf'
+        return pdf_filename
