@@ -1,6 +1,5 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-# from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -24,6 +23,12 @@ from cargo_spec.forms import (
 from cargo_spec.models import CargoContent, Specification, SpecificationDocument
 from cargo_spec.tables import CargoContentTable
 from cargo_spec.utils import check_scan_file, specification_marking
+
+
+def user_test(self):
+    self.object = self.get_object()
+    pass_test = [self.request.user.is_staff, self.request.user == self.object.owner]
+    return any(pass_test)
 
 
 class MyListView(LoginRequiredMixin, ListView):
@@ -80,15 +85,18 @@ class AddSpecificationView(LoginRequiredMixin, CreateView):
         return reverse_lazy("cargo_spec:my-lists")
 
 
-class ModifySpecificationView(LoginRequiredMixin, UpdateView):
+class ModifySpecificationView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Specification
     template_name = "cargo_spec/specification_form.html"
     form_class = SpecificationForm
+    
+    def test_func(self):
+        return user_test(self)
 
     def get_context_data(self, **kwargs):
         data = super(ModifySpecificationView, self).get_context_data(**kwargs)
 
-        if (self.object.owner != self.request.user) or (self.object.approved is True):
+        if self.object.approved is True:
             raise PermissionDenied()
 
         if self.request.POST:
@@ -134,15 +142,20 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
         return reverse_lazy("cargo_spec:my-lists")
 
 
-class SpecificationDetailView(LoginRequiredMixin, DetailView):
+# TODO: sprawdzić czy potrzebny jest login i user passes
+
+class SpecificationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Specification
     template_name = "cargo_spec/specification_detail.html"
     # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
     context_object_name = "specification"
+    
+    def test_func(self):
+        return user_test(self)
 
     def get(self, request, *args, **kwargs):
         data = super(SpecificationDetailView, self).get(request, *args, **kwargs)
-        if (self.object.owner != self.request.user) or (self.object.approved is False):
+        if self.object.approved is False:
             raise PermissionDenied()
         return data
 
@@ -241,3 +254,16 @@ class SpecificationPDFView(LoginRequiredMixin, WeasyTemplateResponseMixin, Detai
         specification_ = get_object_or_404(Specification, pk=self.kwargs["pk"])
         pdf_filename = f"{specification_.marking}.pdf"
         return pdf_filename
+
+
+class ApprovedSpecificationsView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Specification
+    template_name = "cargo_spec/approved_specifications.html"
+    ordering = ["owner_id"]
+    
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(approved=True)
