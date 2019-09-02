@@ -123,7 +123,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL='users.User'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'users:test'
+LOGIN_REDIRECT_URL = 'main'
 try:
     from arct_man.local_settings import DATABASES
 except ModuleNotFoundError:

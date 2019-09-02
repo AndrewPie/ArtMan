@@ -15,11 +15,27 @@
     </script>
     <link href="{% static 'font_awesome/css/all.css' %}" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
+
+<style>
+.navbar {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.nav-item {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 0;
+}
+.active-back {
+    background: #afb078;
+}
+</style>
+
 </head>
 
 <body>
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Arctowski</a>
+        <a class="navbar-brand" href="{% url 'main'%}"><img src="{% static 'images/logo_arct_pl.jpg' %}" style="width: 50px; margin-right: 10px;">Arctowski</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -27,24 +43,22 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
+                <li class="nav-item {% if appname == 'report' %}active active-back{% endif %}">
                     <a class="nav-link" href="{% url 'report:contents-page'%}">Raporty</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item {% if appname == 'cargo_spec' %}active active-back{% endif %}">
                     <a class="nav-link" href="{% url 'cargo_spec:my-lists'%}">Specyfikacje</a>
                 </li>
             </ul>
-            <span class="navbar-text">
-            {% if appname == 'cargo_spec'%}
-                Specyfikacje ładunkowe
-            {% else %}
-                Raporty
-            {% endif %}
-            </span>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout'%}">Wyloguj</a>
+                </li>
+            </ul>
         </div>
     </nav>
 
-    <div style="padding-top: 75px">
+    <div style="padding-top: 85px">
         {% block content %}
         {% endblock %}
     </div>
