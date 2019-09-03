@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import HttpResponse, get_object_or_404, redirect, render
 from django.urls import resolve, reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -22,6 +22,7 @@ from cargo_spec.forms import (
 )
 from cargo_spec.models import CargoContent, Specification, SpecificationDocument
 from cargo_spec.tables import CargoContentTable
+from cargo_spec.resources import SpecificationResource
 from cargo_spec.utils import check_scan_file, specification_marking
 
 
@@ -89,7 +90,7 @@ class ModifySpecificationView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
     model = Specification
     template_name = "cargo_spec/specification_form.html"
     form_class = SpecificationForm
-    
+
     def test_func(self):
         return user_test(self)
 
@@ -111,7 +112,7 @@ class ModifySpecificationView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
         context = self.get_context_data()
         cargos = context["cargos"]
         with transaction.atomic():
-            
+
             if "accept_spec" in self.request.POST:
                 form.instance.approved = True
 
@@ -144,12 +145,13 @@ class DeleteSpecificationView(LoginRequiredMixin, DeleteView):
 
 # TODO: sprawdzić czy potrzebny jest login i user passes
 
+
 class SpecificationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Specification
     template_name = "cargo_spec/specification_detail.html"
     # NOTE: uzyskujemy dzięki temu zmianę w template z {{object}} na {{specification}}
     context_object_name = "specification"
-    
+
     def test_func(self):
         return user_test(self)
 
@@ -260,10 +262,19 @@ class ApprovedSpecificationsView(LoginRequiredMixin, UserPassesTestMixin, ListVi
     model = Specification
     template_name = "cargo_spec/approved_specifications.html"
     ordering = ["owner_id"]
-    
+
     def test_func(self):
         return self.request.user.is_staff
 
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(approved=True)
+
+
+class SpecificationCsvView(View):
+    def get(self, *args, **kwargs):
+        dataset = SpecificationResource().export()
+        response = HttpResponse(dataset.csv, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="specifications.csv"'
+        return response
+

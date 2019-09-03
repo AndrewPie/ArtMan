@@ -8,7 +8,7 @@ Web application to manage CRUD operations on monthly reports and cargo specifica
 ##### Additional features:
 - generate finished specification to pdf file,
 - upload scans/photos,
-- generate csv for all specifications (nearing completion),
+- generate csv for all specifications,
 - generate finished specification to xlsx file (in progress),
 - generate monthly report to pdf file (in progress).
 
