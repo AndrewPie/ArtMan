@@ -1,6 +1,6 @@
 var total_value = function() {
         var sum = 0;
-        $('.value').not($('tr:hidden').find('.value')).each(function(){
+        $('.value').not($('tr:hidden').find('.value')).each(function() {
             sum += +$(this).val();
         });
         $("#id_total_value").val(sum);

@@ -41,10 +41,12 @@ INSTALLED_APPS = [
     'django_cleanup',
     'crispy_forms',
     'django_tables2',
+    'import_export',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
