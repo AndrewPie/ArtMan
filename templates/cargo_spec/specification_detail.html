@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+{% load upload_extras %}
+{% load render_table from django_tables2 %}
+
+
+{% comment %} height: auto; {% endcomment %}
+<style>
+img {
+    width: 100px;
+    height: auto;
+}
+.icon {
+    font-size: 100px;
+}
+</style>
+
+
+<div class="container">
+<div class="mx-auto col-10">
+<div class="card">
+<div class="card-header"><center><h3>Specyfikacja ładunkowa: {{ specification.marking }}</h3></center></div>
+<div class="row justify-content-center">
+<a href="{% url 'cargo_spec:spec-pdf' specification.id %}" class="btn btn-success">Pobierz PDF</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="container">
+    <div class="mx-auto col-10">
+        <dl class="row col-9 mx-auto mt-4">
+            <dt class="col-6 mb-3">Rodzaj opakowania</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.package_type }}</dt>
+            <dt class="col-6 mb-3">Wymiary w cm [dł/szer/wys]</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.dimension_length }}x{{ specification.dimension_width }}x{{ specification.dimension_height }}</dt>
+            <dt class="col-6 mb-3">Waga w kg</dt>
+            <dd class="col-6 text-right mb-3">{{ specification.weight }}</dt>
+            <dt class="col-6 mb-4">Warunki przechowywania</dt>
+            <dd class="col-6 text-right mb-4">{{ specification.storage }}</dt>
+        </dl>
+<hr />
+</div>
+</div>
+
+<div class="container">
+    <div class="mx-auto col-10">
+{% render_table table %}
+</div>
+    <div class="mx-auto col-10">
+<div class="text-right mb-5"><strong>Łączna wartość: {{ specification.total_value }}</strong></div>
+</div>
+</div>
+
+{% if specification.specificationdocument_set.all %}
+<div class="container">
+    <div class="mx-auto col-10">
+<hr />
+<div class="card">
+<center><h4>Wgrane pliki:</h4></center>
+</div>
+</div>
+<div class="mx-auto col-8">
+<ul class="list-unstyled mt-3">
+    {% for doc in specification.specificationdocument_set.all|sort_docs %}
+        {% if '/scan' in doc.only_file_path %}
+        <li class="media">
+            {% if doc.pdf_extension %}
+            <div class='icon'><i class="far fa-file-pdf align-self-center fa-fw"></i></div>
+            {% else %}
+            <img src="{{ doc.document.url}}" class="align-self-center mr-3">
+            {% endif %}
+        <div class="media-body">
+        <p class="mt-3">Skan: <a href="{{ doc.document.url}}">{{ doc.filename }}</a>
+            <form action="{% url 'cargo_spec:delete-doc' specification.id doc.id %}" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="hidden" name="doc.id" value="{{ doc.pk }}">
+                <button type="submit" class="btn btn-danger" onclick='return confirm("Czy napewno usunąć plik {{ doc.filename }}?");'>Usuń</button>
+            </form>
+        </p>
+        </div>
+        </li>
+        <hr />
+        {% else %}
+        <li class="media">
+        <img src="{{ doc.document.url}}" class="align-self-center mr-3">
+        <div class="media-body">
+        <p class="mt-3">Zdjęcie: <a href="{{ doc.document.url}}">{{ doc.filename }}</a>
+            <form action="{% url 'cargo_spec:delete-doc' specification.id doc.id %}" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="hidden" name="doc.id" value="{{ doc.pk }}">
+                <button type="submit" class="btn btn-danger" onclick='return confirm("Czy napewno usunąć plik {{ doc.filename }}?");'>Usuń</button>
+            </form>
+        </p>
+        </div>
+        </li>
+        <hr />
+        {% endif %}
+    {% endfor %}
+</ul>
+</p>
+</div>
+{% endif %}
+
+<div class="container">
+    <div class="mx-auto col-10 mb-5">
+<div class="row">
+{% if not specification.marking|check_scan_file %}
+<div class="col-6 mx-auto">
+<form action="{% url 'cargo_spec:scan-upload' specification.id %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="specification_id" value="{{ specification.id }}" />
+        <button type="submit" class="btn btn-info">Upload skanu</button>
+</form>
+</div>
+{% endif %}
+<div class="col-6">
+<form action="{% url 'cargo_spec:photo-upload' specification.id %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="specification_id" value="{{ specification.id }}" />
+{% if not specification.marking|check_scan_file %}
+        <div class="text-right">
+        {% endif %}
+        <button type="submit" class="btn btn-info">Upload zdjęć</button>
+        </div>
+</div>
+</form>
+</div>
+</div>
+</div>
+{% endblock %}

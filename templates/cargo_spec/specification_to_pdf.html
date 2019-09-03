@@ -1,0 +1,197 @@
+{% load render_table from django_tables2 %}
+
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Arial, Verdana, Helvetica, sans-serif;
+            font-size: 18px;
+        }
+
+        .alt-font-size {
+            font-size: 17px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 0 5px 0 5px;
+        }
+
+        table.spec-table tr {
+            height: 30px;
+        }
+
+        .no-border {
+            border: none;
+        }
+
+        hr {
+            border-top: 2px dotted #000;
+            color: #000;
+            height: 1px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="header mb-4">
+            <center>
+                <p class="h4"><strong>Specyfikacja ładunkowa</strong></p>
+            </center>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col">
+                <table class="spec-table">
+                    <tbody>
+                        <tr>
+                            <td class="no-border h5"><strong>Oznakowanie/Kolejny numer*</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="no-border h5"><strong>Właściciel</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="no-border h5"><strong>Rodzaj opakowania</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="no-border h5"><strong>Wymiary w cm [dł/szer/wys]</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="no-border h5"><strong>Waga w kg</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="no-border h5"><strong>Warunki przechowywania</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-5">
+                <table class="w-100 spec-table">
+                    <tbody>
+                        <tr>
+                            <td class="text-center">{{ specification.marking }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{{ specification.owner.first_name }}
+                                {{ specification.owner.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{{ specification.package_type }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">
+                                {{ specification.dimension_length }}x{{ specification.dimension_width }}x{{ specification.dimension_height }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{{ specification.weight }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{{ specification.storage }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="mx-auto">
+            <center>
+                <p class="h4 mb-4"><strong>Spis zawartości</strong></p>
+            </center>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">lp.</th>
+                        <th class="text-center">Nazwa (i nr seryjny sprzętu wartościowego podlegającego ubezpieczeniu**)
+                        </th>
+                        <th class="text-center">Ilość</th>
+                        <th class="text-center">Jedn. miary</th>
+                        <th class="text-center">Wartość (PLN)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% with specification.cargos_content.all|length as len %}
+                    {% for content in specification.cargos_content.all %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ content.name }}
+                            {% if content.serial_number %}
+                            (numer seryjny - {{ content.serial_number }})</td>
+                        {% endif %}
+                        <td class="text-right">{{ content.quantity }}</td>
+                        <td class="text-center">{{ content.unit_of_measurement }}</td>
+                        <td class="text-right">{{ content.value }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for i in empty_row_len %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter|add:len }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                    {% endwith %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="no-border"></td>
+                        <td class="no-border"></td>
+                        <td class="no-border"></td>
+                        <th class="text-center"><strong>Łączna wartość:</strong></th>
+                        <td class="text-right"><b>{{ specification.total_value }}</b></th>
+                    </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="mx-auto col-10 mt-4">
+                <p class="alt-font-size text-center">Oświadczam, że przywożone rzeczy osobiste nie były zakupione poza
+                    terenem UE, zostały wcześniej wywiezione z Polski i były użytkowane na terenie stacji badawczej do
+                    celów osobistych.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mx-auto col-11 mt-5">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="mt-3 text-center">
+                <p><b>Dane osoby odpowiedzialnej za ładunek (Imię i Nazwisko, telefon kontaktowy, data, podpis)</b></p>
+                <p class="alt-font-size">* opakowanie powinno być oznakowane z każdej strony zgodnie z tym jak wpisano w
+                    specyfikacji</p>
+                <p class="alt-font-size">** sprzęt wartościowy, który podlega ubezpieczeniu, musi być obfotografowany,
+                    tj. zdjęcie tabliczki z nr seryjnym oraz zdjęcie w otwartym pakunku na którym widać sprzęt i nr
+                    pakunku</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

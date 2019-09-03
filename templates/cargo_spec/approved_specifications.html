@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Zatwierdzone specyfikacje ładunkowe:</h3>
+{% if not object_list %}
+    <p>Brak list</p>
+{% else %}
+    <ul>
+        {% for object in object_list %}
+                <li><a href="{% url 'cargo_spec:spec-detail' object.id %}">{{ object.marking }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<a href="">Pobierz plik CSV</a>
+{% endblock %}

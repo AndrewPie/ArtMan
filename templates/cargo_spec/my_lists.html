@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Specyfikacje ładunkowe:</h3>
+{% if not object_list %}
+    <p>Brak list</p>
+{% else %}
+    {% if True in a_list %}
+        <p>Zatwierdzone</p>
+        <ul>
+        {% for object in object_list %}
+            {% if object.approved %}
+                <li><a href="{% url 'cargo_spec:spec-detail' object.id %}">{{ object.marking }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% if False in a_list %}
+        <p>Niezatwierdzone</p>
+        <ul>
+        {% for object in object_list %}
+            {% if not object.approved %}
+                <li><a href="{% url 'cargo_spec:modify-spec' object.id %}">{{ object.marking }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+<a href="{% url 'cargo_spec:add-spec' %}">Dodaj specyfikację</a>
+{% endblock %}
