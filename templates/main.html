@@ -20,22 +20,17 @@
 </head>
 
 <body>
-<style>
-.jumbotron {
-    background-image: url("{% static 'images/Henryk_Arctowski_Polish_Antarctic_Station.jpg' %}");
-}
-</style>
-<header>
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'main'%}"><img src="{% static 'images/logo_arct_pl.jpg' %}" style="width: 50px; margin-right: 10px;">System Obsługi Stacji Arctowski</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
-</header>
-    <main role="main" style="padding-top: 75px">
+    <style>
+        .jumbotron {
+            background-image: url("{% static 'images/Henryk_Arctowski_Polish_Antarctic_Station.jpg' %}");
+        }
+    </style>
 
+    <header>
+        {% include "navbar.html" %}
+    </header>
+
+    <main role="main" style="padding-top: 70px">
         <section class="jumbotron text-center">
             <div class="container">
                 <h1 class="jumbotron-heading">Witaj</h1>
@@ -59,7 +54,8 @@
                                 </p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'report:contents-page' %}">Otwórz</a>
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                            href="{% url 'report:contents-page' %}">Otwórz</a>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +69,8 @@
                                 </p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'cargo_spec:my-lists' %}">Otwórz</a>
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                            href="{% url 'cargo_spec:my-lists' %}">Otwórz</a>
                                     </div>
                                 </div>
                             </div>

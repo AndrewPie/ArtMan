@@ -15,71 +15,15 @@
     </script>
     <link href="{% static 'font_awesome/css/all.css' %}" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
-
-    <style>
-        .navbar {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        .nav-item {
-            padding-top: 15px;
-            padding-bottom: 15px;
-            border-radius: 0;
-        }
-
-        .active-back {
-            background: #afb078;
-        }
-    </style>
-
 </head>
 
 <body>
-
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-        {% url 'cargo_spec:approved-spec' as approved_url %}
-        <a class="navbar-brand" href="{% url 'main'%}"><img src="{% static 'images/logo_arct_pl.jpg' %}"
-                style="width: 50px; margin-right: 10px;">Arctowski</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item {% if appname == 'report' %}active active-back{% endif %}">
-                    <a class="nav-link" href="{% url 'report:contents-page' %}">Raporty</a>
-                </li>
-                <li class="nav-item {% if appname == 'cargo_spec' %}active active-back{% endif %}">
-                    <a class="nav-link" href="{% url 'cargo_spec:my-lists' %}">Specyfikacje</a>
-                </li>
-                {% if request.user.is_staff %}
-                <li id="approved_spec" class="nav-item {% if request.get_full_path == approved_url %}active active-back{% endif %}">
-                    <a class="nav-link" href="{% url 'cargo_spec:approved-spec' %}">Specyfikacje pracowników</a>
-                </li>
-                {% endif %}
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'users:logout'%}">Wyloguj</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    {% include "navbar.html" %}
 
     <div style="padding-top: 85px">
         {% block content %}
         {% endblock %}
     </div>
-
-    <script type="text/javascript">
-        $(function () {
-            if ($('#approved_spec').hasClass('active')) {
-                $('#approved_spec').siblings().removeClass('active active-back');
-            };
-        });
-    </script>
 </body>
 
 </html>

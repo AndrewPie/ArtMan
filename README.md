@@ -8,7 +8,7 @@ Web application to manage CRUD operations on monthly reports and cargo specifica
 ##### Additional features:
 - generate finished specification to pdf file,
 - upload scans/photos,
-- generate csv for all specifications,
+- generate csv file for all specifications,
 - generate finished specification to xlsx file (in progress),
 - generate monthly report to pdf file (in progress).
 
@@ -25,7 +25,7 @@ Web application to manage CRUD operations on monthly reports and cargo specifica
 pip install -r requirements.txt
 ```
 - Create database (and set it up in settings.py), then makemigrations and migrate
-- Populate database (currently only 'report' part) using
+- You can populate database (currently only 'report' part) using
 ```sh
 python manage.py runscript populate_report
 ```
