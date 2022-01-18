@@ -68,7 +68,7 @@ PyYAML==5.4
 pyzmq==18.0.2
 qtconsole==4.5.1
 regex==2019.6.8
-reportlab==3.5.23
+reportlab==3.5.55
 Send2Trash==1.5.0
 six==1.12.0
 sqlparse==0.3.0
