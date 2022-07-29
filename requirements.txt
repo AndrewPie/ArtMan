@@ -38,7 +38,7 @@ Jinja2==2.11.3
 jsonfield==2.0.2
 jsonschema==3.0.1
 MarkupSafe==1.1.1
-mistune==0.8.4
+mistune==2.0.3
 nbconvert==5.5.0
 nbformat==4.4.0
 notebook==6.4.1
